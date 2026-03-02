@@ -1,0 +1,4 @@
+user_id,income10k,asset10k,debt10k,age,education,children,exp_years,risk_label
+1,30,200,50,30,本科,0,3,1
+2,15,80,40,56,大专,2,10,0
+3,22,120,20,28,硕士及以上,0,1,1

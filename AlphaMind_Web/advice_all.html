@@ -1,0 +1,2076 @@
+<!doctype html>
+<html lang='zh-CN'>
+<head>
+  <meta charset='utf-8' />
+  <meta name='viewport' content='width=device-width,initial-scale=1' />
+  <title>AlphaMind | 智能投顾建议</title>
+  <style>
+    :root{
+      --bg: #fbf3ea;
+      --card: #ffffff;
+      --border: #eadfd3;
+      --text: #2b2b2b;
+      --muted: #6f6a63;
+      --primary: #a31818;
+      --shadow: 0 10px 30px rgba(25, 10, 10, .06);
+      --radius: 14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
+    }
+    *{ box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: var(--sans);
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 20% 0%, #fff8f1 0%, var(--bg) 60%, var(--bg) 100%);
+      padding: 24px;
+    }
+
+    .topbar{
+      max-width: 1100px;
+      margin: 0 auto 18px auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 14px 18px;
+      background: rgba(255,255,255,.65);
+      backdrop-filter: blur(6px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .brand-logo{
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      overflow:hidden;
+      box-shadow: 0 6px 14px rgba(163,24,24,.18);
+      flex: 0 0 auto;
+    }
+    .brand-logo img{
+      width:100%; height:100%; object-fit:cover; display:block;
+    }
+    .brand-title{ line-height: 1.1; min-width: 0; }
+    .brand-title .h1{
+      font-weight: 800;
+      font-size: 20px;
+      color: var(--primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .brand-title .sub{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .badge{
+      background: var(--primary);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 8px 18px rgba(163,24,24,.18);
+    }
+
+    .container{
+      max-width: 1100px;
+      margin: 0 auto;
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap: 18px;
+      align-items:start;
+    }
+    @media (max-width: 1000px){
+      .container{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card-hd{
+      padding: 14px 16px;
+      border-bottom: 1px solid #f0e7dc;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      background: linear-gradient(180deg, rgba(251,243,234,.55) 0%, rgba(255,255,255,.85) 100%);
+    }
+    .card-title{
+      font-weight: 800;
+      color: #3a2a2a;
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width:0;
+    }
+    .dot{
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 0 4px rgba(163,24,24,.10);
+      flex: 0 0 auto;
+    }
+    .card-bd{ padding: 14px 16px; }
+
+    /* 顶部摘要 */
+    .summary-grid{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 900px){
+      .summary-grid{ grid-template-columns: repeat(2, 1fr); }
+    }
+    .stat{
+      border: 1px solid #f0e7dc;
+      border-radius: 12px;
+      padding: 12px;
+      background: #fff;
+    }
+    .stat .k{ font-size: 12px; color: var(--muted); }
+    .stat .v{ font-size: 18px; font-weight: 900; margin-top: 4px; color: #2c1d1d; }
+
+    /* 用户建议列表容器 */
+    .user-grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding: 14px;
+    }
+
+    /* 右侧 JSON / 合规卡片复用样式 */
+    .codebox{
+      font-family: var(--mono);
+      font-size: 12px;
+      background: #101010;
+      color: #eaeaea;
+      border-radius: 12px;
+      padding: 12px;
+      overflow:auto;
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 10px 20px rgba(0,0,0,.08);
+      white-space: pre;
+    }
+    .pill{
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #f0e7dc;
+      background: #fff;
+      color: #5c4e4e;
+      white-space: nowrap;
+    }
+    .pill.red{ border-color: rgba(163,24,24,.25); color: var(--primary); background: rgba(163,24,24,.06); }
+    .pill.green{ border-color: rgba(39,174,96,.25); color: #1e8449; background: rgba(39,174,96,.08); }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--primary);
+      color:#fff;
+      font-weight: 800;
+      border: 1px solid rgba(0,0,0,.06);
+      text-decoration:none;
+      box-shadow: 0 10px 20px rgba(163,24,24,.18);
+    }
+    .btn.secondary{
+      background: #fff;
+      color: var(--primary);
+      border: 1px solid rgba(163,24,24,.22);
+      box-shadow: none;
+    }
+    .muted{ color: var(--muted); font-size: 12px; }
+
+    /* Added styles for user card */
+    .user-card {
+      background: #fff;
+      border: 1px solid #f0e7dc;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+    .user-hd {
+      padding: 12px 16px;
+      background: #fafafa;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .user-hd .left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .user-id {
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .user-bd {
+      padding: 16px;
+    }
+    .kv {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px 16px;
+      margin-bottom: 16px;
+    }
+    .kv .k {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: right;
+      min-width: 80px;
+    }
+    .kv .v {
+      font-size: 14px;
+    }
+    .section {
+      margin-top: 16px;
+    }
+    .sec-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: var(--primary);
+    }
+    .actions .act-item {
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 顶部栏 -->
+  <div class='topbar'>
+    <div class='brand'>
+      <div class='brand-logo' aria-hidden='true'>
+        <img src='alphamind_logo.png' alt='logo' onerror="this.style.display='none'" />
+      </div>
+      <div class='brand-title'>
+        <div class='h1'>AlphaMind 智能投顾建议</div>
+        <div class='sub'>画像 × 风险评估 × 资产配置 × 合规输出</div>
+      </div>
+    </div>
+    <div class='badge'>Beta</div>
+  </div>
+
+  <div class='container'>
+    <!-- 左侧：建议 -->
+    <div class='card'>
+      <div class='card-hd'>
+        <div class='card-title'><span class='dot'></span>建议总览</div>
+        <div class='muted'>生成时间：2025-12-20</div>
+      </div>
+      <div class='card-bd'>
+        <!-- 顶部摘要统计：可选 -->
+        <div class='summary-grid'>
+          <div class='stat'><div class='k'>用户数</div><div class='v'>50</div></div>
+          <div class='stat'><div class='k'>进取型</div><div class='v'>-</div></div>
+          <div class='stat'><div class='k'>稳健型</div><div class='v'>-</div></div>
+          <div class='stat'><div class='k'>保守型</div><div class='v'>-</div></div>
+        </div>
+      </div>
+
+      <!-- 用户卡片列表（由 Python 填充） -->
+      <div class='user-grid'>
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 0</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：42.2%</span>
+            </div>
+            <a class="btn secondary" href="#user-0">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-0">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;沪深300ETF&#x27;, &#x27;中证A500ETF&#x27;, &#x27;宽基指数基金&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 1</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.9%</span>
+            </div>
+            <a class="btn secondary" href="#user-1">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-1">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;理财基础&#x27;, &#x27;基金定投&#x27;, &#x27;风险教育&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 2</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.8%</span>
+            </div>
+            <a class="btn secondary" href="#user-2">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-2">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;沪深300ETF&#x27;, &#x27;中证A500ETF&#x27;, &#x27;宽基指数基金&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 3</div>
+              <span class="pill ">进取型</span>
+              <span class="pill">风险概率：67.6%</span>
+            </div>
+            <a class="btn secondary" href="#user-3">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-3">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;沪深300ETF&#x27;, &#x27;中证A500ETF&#x27;, &#x27;宽基指数基金&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 4</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：42.2%</span>
+            </div>
+            <a class="btn secondary" href="#user-4">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-4">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;宁德时代&#x27;, &#x27;比亚迪&#x27;, &#x27;新能源ETF&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 5</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：42.1%</span>
+            </div>
+            <a class="btn secondary" href="#user-5">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-5">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;黄金ETF&#x27;, &#x27;大宗商品ETF&#x27;, &#x27;抗通胀主题&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 6</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：42.1%</span>
+            </div>
+            <a class="btn secondary" href="#user-6">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-6">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;全球资产配置&#x27;, &#x27;指数增强&#x27;, &#x27;行业轮动&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 7</div>
+              <span class="pill ">进取型</span>
+              <span class="pill">风险概率：68.0%</span>
+            </div>
+            <a class="btn secondary" href="#user-7">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-7">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;宁德时代&#x27;, &#x27;比亚迪&#x27;, &#x27;新能源ETF&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 8</div>
+              <span class="pill ">进取型</span>
+              <span class="pill">风险概率：67.9%</span>
+            </div>
+            <a class="btn secondary" href="#user-8">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-8">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;中概互联ETF&#x27;, &#x27;纳指ETF&#x27;, &#x27;海外科技ETF&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 9</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.6%</span>
+            </div>
+            <a class="btn secondary" href="#user-9">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-9">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;黄金ETF&#x27;, &#x27;大宗商品ETF&#x27;, &#x27;抗通胀主题&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 10</div>
+              <span class="pill ">进取型</span>
+              <span class="pill">风险概率：66.1%</span>
+            </div>
+            <a class="btn secondary" href="#user-10">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-10">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;红利ETF&#x27;, &#x27;高股息ETF&#x27;, &#x27;银行板块&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 11</div>
+              <span class="pill ">进取型</span>
+              <span class="pill">风险概率：68.0%</span>
+            </div>
+            <a class="btn secondary" href="#user-11">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-11">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;沪深300ETF&#x27;, &#x27;中证A500ETF&#x27;, &#x27;宽基指数基金&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 12</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：42.1%</span>
+            </div>
+            <a class="btn secondary" href="#user-12">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-12">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;中短债基金&#x27;, &#x27;货币基金&#x27;, &#x27;国债ETF&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 13</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.9%</span>
+            </div>
+            <a class="btn secondary" href="#user-13">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-13">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;宁德时代&#x27;, &#x27;比亚迪&#x27;, &#x27;新能源ETF&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 14</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：46.0%</span>
+            </div>
+            <a class="btn secondary" href="#user-14">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-14">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;沪深300ETF&#x27;, &#x27;中证A500ETF&#x27;, &#x27;宽基指数基金&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 15</div>
+              <span class="pill ">进取型</span>
+              <span class="pill">风险概率：67.9%</span>
+            </div>
+            <a class="btn secondary" href="#user-15">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-15">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;中短债基金&#x27;, &#x27;货币基金&#x27;, &#x27;国债ETF&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 16</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.9%</span>
+            </div>
+            <a class="btn secondary" href="#user-16">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-16">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;全球资产配置&#x27;, &#x27;指数增强&#x27;, &#x27;行业轮动&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 17</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.8%</span>
+            </div>
+            <a class="btn secondary" href="#user-17">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-17">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;全球资产配置&#x27;, &#x27;指数增强&#x27;, &#x27;行业轮动&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 18</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：42.1%</span>
+            </div>
+            <a class="btn secondary" href="#user-18">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-18">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;黄金ETF&#x27;, &#x27;大宗商品ETF&#x27;, &#x27;抗通胀主题&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 19</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.7%</span>
+            </div>
+            <a class="btn secondary" href="#user-19">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-19">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;红利ETF&#x27;, &#x27;高股息ETF&#x27;, &#x27;银行板块&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 20</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.8%</span>
+            </div>
+            <a class="btn secondary" href="#user-20">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-20">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;红利ETF&#x27;, &#x27;高股息ETF&#x27;, &#x27;银行板块&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 21</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：42.3%</span>
+            </div>
+            <a class="btn secondary" href="#user-21">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-21">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;黄金ETF&#x27;, &#x27;大宗商品ETF&#x27;, &#x27;抗通胀主题&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 22</div>
+              <span class="pill ">进取型</span>
+              <span class="pill">风险概率：67.7%</span>
+            </div>
+            <a class="btn secondary" href="#user-22">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-22">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;宁德时代&#x27;, &#x27;比亚迪&#x27;, &#x27;新能源ETF&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 23</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.8%</span>
+            </div>
+            <a class="btn secondary" href="#user-23">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-23">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;黄金ETF&#x27;, &#x27;大宗商品ETF&#x27;, &#x27;抗通胀主题&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 24</div>
+              <span class="pill ">进取型</span>
+              <span class="pill">风险概率：68.0%</span>
+            </div>
+            <a class="btn secondary" href="#user-24">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-24">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;养老目标基金&#x27;, &#x27;年金/养老金&#x27;, &#x27;稳健配置&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 25</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：45.5%</span>
+            </div>
+            <a class="btn secondary" href="#user-25">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-25">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;理财基础&#x27;, &#x27;基金定投&#x27;, &#x27;风险教育&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 26</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：42.1%</span>
+            </div>
+            <a class="btn secondary" href="#user-26">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-26">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;宁德时代&#x27;, &#x27;比亚迪&#x27;, &#x27;新能源ETF&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 27</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：42.1%</span>
+            </div>
+            <a class="btn secondary" href="#user-27">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-27">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;红利ETF&#x27;, &#x27;高股息ETF&#x27;, &#x27;银行板块&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 28</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.9%</span>
+            </div>
+            <a class="btn secondary" href="#user-28">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-28">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;红利ETF&#x27;, &#x27;高股息ETF&#x27;, &#x27;银行板块&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 29</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.7%</span>
+            </div>
+            <a class="btn secondary" href="#user-29">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-29">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;中短债基金&#x27;, &#x27;货币基金&#x27;, &#x27;国债ETF&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 30</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.7%</span>
+            </div>
+            <a class="btn secondary" href="#user-30">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-30">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;沪深300ETF&#x27;, &#x27;中证A500ETF&#x27;, &#x27;宽基指数基金&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 31</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：42.6%</span>
+            </div>
+            <a class="btn secondary" href="#user-31">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-31">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;全球资产配置&#x27;, &#x27;指数增强&#x27;, &#x27;行业轮动&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 32</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：42.1%</span>
+            </div>
+            <a class="btn secondary" href="#user-32">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-32">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;全球资产配置&#x27;, &#x27;指数增强&#x27;, &#x27;行业轮动&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 33</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.6%</span>
+            </div>
+            <a class="btn secondary" href="#user-33">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-33">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;红利ETF&#x27;, &#x27;高股息ETF&#x27;, &#x27;银行板块&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 34</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：42.0%</span>
+            </div>
+            <a class="btn secondary" href="#user-34">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-34">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;中短债基金&#x27;, &#x27;货币基金&#x27;, &#x27;国债ETF&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 35</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.9%</span>
+            </div>
+            <a class="btn secondary" href="#user-35">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-35">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;创业板ETF&#x27;, &#x27;中证500ETF&#x27;, &#x27;成长风格基金&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 36</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：42.2%</span>
+            </div>
+            <a class="btn secondary" href="#user-36">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-36">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;沪深300ETF&#x27;, &#x27;中证A500ETF&#x27;, &#x27;宽基指数基金&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 37</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：42.3%</span>
+            </div>
+            <a class="btn secondary" href="#user-37">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-37">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;理财基础&#x27;, &#x27;基金定投&#x27;, &#x27;风险教育&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 38</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.7%</span>
+            </div>
+            <a class="btn secondary" href="#user-38">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-38">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;养老目标基金&#x27;, &#x27;年金/养老金&#x27;, &#x27;稳健配置&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 39</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.8%</span>
+            </div>
+            <a class="btn secondary" href="#user-39">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-39">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;红利ETF&#x27;, &#x27;高股息ETF&#x27;, &#x27;银行板块&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 40</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.8%</span>
+            </div>
+            <a class="btn secondary" href="#user-40">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-40">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;中短债基金&#x27;, &#x27;货币基金&#x27;, &#x27;国债ETF&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 41</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：42.1%</span>
+            </div>
+            <a class="btn secondary" href="#user-41">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-41">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;红利ETF&#x27;, &#x27;高股息ETF&#x27;, &#x27;银行板块&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 42</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：42.0%</span>
+            </div>
+            <a class="btn secondary" href="#user-42">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-42">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;红利ETF&#x27;, &#x27;高股息ETF&#x27;, &#x27;银行板块&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 43</div>
+              <span class="pill ">进取型</span>
+              <span class="pill">风险概率：68.0%</span>
+            </div>
+            <a class="btn secondary" href="#user-43">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-43">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;红利ETF&#x27;, &#x27;高股息ETF&#x27;, &#x27;银行板块&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 44</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.9%</span>
+            </div>
+            <a class="btn secondary" href="#user-44">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-44">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;沪深300ETF&#x27;, &#x27;中证A500ETF&#x27;, &#x27;宽基指数基金&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 45</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.6%</span>
+            </div>
+            <a class="btn secondary" href="#user-45">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-45">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;养老目标基金&#x27;, &#x27;年金/养老金&#x27;, &#x27;稳健配置&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 46</div>
+              <span class="pill ">进取型</span>
+              <span class="pill">风险概率：67.8%</span>
+            </div>
+            <a class="btn secondary" href="#user-46">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-46">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;黄金ETF&#x27;, &#x27;大宗商品ETF&#x27;, &#x27;抗通胀主题&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 47</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.8%</span>
+            </div>
+            <a class="btn secondary" href="#user-47">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-47">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;全球资产配置&#x27;, &#x27;指数增强&#x27;, &#x27;行业轮动&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 48</div>
+              <span class="pill ">进取型</span>
+              <span class="pill">风险概率：67.8%</span>
+            </div>
+            <a class="btn secondary" href="#user-48">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-48">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;宁德时代&#x27;, &#x27;比亚迪&#x27;, &#x27;新能源ETF&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 49</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：41.7%</span>
+            </div>
+            <a class="btn secondary" href="#user-49">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-49">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">模型生成失败，建议以分散配置与风险控制为先。</div>
+              <div class="k">用户关注</div><div class="v">[&#x27;黄金ETF&#x27;, &#x27;大宗商品ETF&#x27;, &#x27;抗通胀主题&#x27;]</div>
+              <div class="k">免责声明</div><div class="v">免责声明：本内容仅供参考，不构成投资建议（Qwen调用失败：401 Client Error: Unauthorized for url: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions）。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>分散配置</li><li>分批/定投</li><li>控制仓位与回撤</li><li>定期复盘再平衡</li>
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 先预留应急金，再按月定投或分批投入。</div><div class='act-item'><strong>组合执行:</strong> 以宽基指数/债券基金为核心，主题方向少量卫星配置。</div><div class='act-item'><strong>风险控制:</strong> 设定最大回撤阈值与仓位上限，避免情绪交易。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+            
+
+      </div>
+    </div>
+
+    <!-- 右侧：请求数据预览 + 字段映射（示意） -->
+    <div>
+      <div class="card" style="margin-bottom: 18px;">
+        <div class="card-hd">
+          <div class="card-title"><span class="dot"></span>请求数据预览</div>
+          <span class="pill red">POST /advisor/generate</span>
+        </div>
+        <div class="card-bd">
+          <div class="muted" style="margin-bottom:10px;">
+            实际系统对接时，可直接 POST 下列 JSON 结构给后端，后端按模板渲染结构化建议。
+          </div>
+          <div class="codebox">{
+  "users": [
+    {
+      "id": 0,
+      "profile": {
+        "age": 28,
+        "education": "高中及以下",
+        "income10k": 12.5,
+        "asset10k": 50.0,
+        "debt10k": 20.0,
+        "children": 1,
+        "exp_years": 3
+      },
+      "model_predictions": {
+        "risk_prob": 0.45,
+        "risk_level": "稳健型"
+      }
+    }
+  ]
+}</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 18px;">
+        <div class="card-hd">
+          <div class="card-title"><span class="dot"></span>字段与模型对应</div>
+        </div>
+        <div class="card-bd">
+          <div class="codebox" style="background:#fff7ef;color:#3b2f2f;border:1px solid #f0e7dc;box-shadow:none;white-space:pre-wrap;">
+age → profile.age (int)
+education → profile.education (str)
+income10k → profile.income10k (float)
+asset10k → profile.asset10k (float)
+debt10k → profile.debt10k (float)
+children → profile.children (int)
+exp_years → profile.exp_years (int)
+risk_prob → model_predictions.risk_prob (float)
+portfolio → portfolio_recommendation (str)
+rag_evidence → sources (list)
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd">
+          <div class="card-title"><span class="dot"></span>合规提示</div>
+          <span class="pill green">必读</span>
+        </div>
+        <div class="card-bd">
+          <ul>
+            <li>不承诺收益，不出现“保证盈利/稳赚”等表述。</li>
+            <li>不提供具体个股/买卖点；可给 ETF/指数基金/资产类别方向。</li>
+            <li>每条建议包含风险提示与免责声明。</li>
+            <li>sources 至少包含 1 条 compliance 类来源。</li>
+          </ul>
+          <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+            <a class="btn" href="#top">回到顶部</a>
+            <a class="btn secondary" href="javascript:window.print()">打印/导出 PDF</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <a id="top"></a>
+</body>
+</html>
+    

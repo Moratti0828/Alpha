@@ -1,0 +1,14 @@
+<view class="container">
+  <view class="content">
+    <image class="logo" src="/images/tab_terminal_active.png" mode="aspectFit"></image>
+    <view class="title">AlphaMind</view>
+    <view class="subtitle">双塔驱动 · 智能投顾</view>
+    
+    <block wx:if="{{!isLoading}}">
+      <view class="btn-start" bindtap="onStart">开启投资之旅</view>
+    </block>
+    <block wx:else>
+      <view class="loading-text">正在连接双塔模型...</view>
+    </block>
+  </view>
+</view>

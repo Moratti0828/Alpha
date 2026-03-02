@@ -1,0 +1,43 @@
+version: 1
+defaults:
+  market:
+    lookback_days: 160   # 用于计算波动/回撤，>=120较稳
+    # 国内常用指数（TuShare指数代码）
+    # 上证综指: 000001.SH
+    # 深证成指: 399001.SZ
+    # 创业板指: 399006.SZ
+    # 科创50: 000688.SH
+    # 沪深300: 000300.SH
+    # 中证500: 000905.SH
+    # 中证1000: 000852.SH
+    index_ts_codes:
+    - "000001.SH"
+    - "399001.SZ"
+    - "399006.SZ"
+    - "000688.SH"
+    - "000300.SH"
+    - "000905.SH"
+    - "000852.SH"
+
+sources:
+  - id: indices_daily
+    provider: tushare
+    api: index_daily
+    enabled: true
+
+  - id: shibor
+    provider: tushare
+    api: shibor
+    enabled: true
+
+  # 可选：国债收益率（TuShare是否有权限取决于账号权限/接口）
+  - id: yield_curve
+    provider: tushare
+    api: yield_curve
+    enabled: false
+
+  # 可选：宏观数据示例（按需再开）
+  - id: macro_cpi
+    provider: tushare
+    api: cn_cpi
+    enabled: false

@@ -1,0 +1,11 @@
+{
+    "usingComponents": {
+      "t-search": "tdesign-miniprogram/search/search",
+      "t-tag": "tdesign-miniprogram/tag/tag",
+      "ec-canvas": "../../ec-canvas/ec-canvas"
+    },
+    "navigationBarTitleText": "AlphaMind Terminal",
+    "componentPlaceholder": {
+      "ec-canvas": "view"
+    }
+  }

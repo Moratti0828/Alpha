@@ -1,0 +1,97 @@
+<view class="container">
+  
+  <view class="result-card card">
+    <view class="user-header">
+      <image class="mini-avatar" src="/images/default_avatar.png"></image>
+      <text class="user-name">AlphaMind 用户</text>
+    </view>
+
+    <view class="result-headline">你是{{riskType}}投资者</view>
+
+    <view class="radar-container">
+      <ec-canvas id="mychart-radar-result" canvas-id="mychart-radar-result" ec="{{ ec }}"></ec-canvas>
+    </view>
+
+    <view class="result-text">
+      帮理财为你配置的策略，主要以债券和股票类资产投资为主。在运作期间可能受市场行情等原因，引起资产波动亏损。
+    </view>
+
+    <view class="result-actions">
+      <view class="btn-retest" bindtap="reTest">去重新评估 ></view>
+      <view class="btn-quit" bindtap="goHome">不接受亏损，退出 ></view>
+    </view>
+  </view>
+
+  <view class="strategy-header">
+    <view class="s-title">你本次想继续稳健投资</view>
+    <view class="s-sub">目标年化收益1.7%以上 | 适合短期/中长期投资</view>
+  </view>
+
+  <view class="strategy-grid">
+    
+    <view class="st-card selected">
+      <view class="st-top">
+        <text class="tag">选择</text>
+        <view class="st-name">灵活存取 <text class="arrow">></text></view>
+        <view class="st-desc">收益超余额宝</view>
+      </view>
+      <view class="st-mid">
+        <view class="rate-num">1.7790%</view>
+        <view class="rate-txt">7日年化收益率</view>
+      </view>
+      <view class="st-bot">
+        <view class="feature-tag">当日快赎</view>
+        <view class="feature-tag">88万</view>
+      </view>
+    </view>
+
+    <view class="st-card">
+      <view class="st-top">
+        <text class="tag">选择</text>
+        <view class="st-name">稳健收益 <text class="arrow">></text></view>
+        <view class="st-desc">接受封闭运作</view>
+      </view>
+      <view class="st-mid">
+        <view class="rate-num">2.5%~4.4%</view>
+        <view class="rate-txt">期望年化</view>
+      </view>
+      <view class="st-bot">
+        <view class="feature-tag">7天</view>
+        <view class="feature-tag">3月</view>
+        <view class="feature-tag">12月</view>
+      </view>
+    </view>
+
+    <view class="st-card">
+      <view class="st-top">
+        <text class="tag">选择</text>
+        <view class="st-name">稳中求进 <text class="arrow">></text></view>
+        <view class="st-desc">冒少量风险</view>
+      </view>
+      <view class="st-mid">
+        <view class="rate-num">3.0%~5.6%</view>
+        <view class="rate-txt">期望年化</view>
+      </view>
+      <view class="st-bot">
+        <view class="feature-graph"></view>
+        <view class="feature-text">攻守兼备</view>
+        <view class="feature-text">求稳也求赚</view>
+      </view>
+    </view>
+
+  </view>
+
+  <view class="advanced-card card">
+    <view class="adv-title">AI 为您定制的资产配置建议</view>
+    <view class="adv-sub">基于 {{riskType}} 策略模型生成</view>
+    
+    <view class="adv-row" style="flex-wrap: wrap; gap: 20rpx;">
+      <view class="adv-item" wx:for="{{suggestions}}" wx:key="name" style="min-width: 30%;">
+        <view class="adv-percent" style="color: #1677FF; font-weight:bold; font-size:36rpx;">{{item.percent}}</view>
+        <view class="adv-name">{{item.name}}</view>
+        <view class="adv-desc">{{item.desc}}</view>
+      </view>
+    </view>
+  </view>
+
+</view>

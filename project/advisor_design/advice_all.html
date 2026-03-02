@@ -1,0 +1,1213 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AlphaMind | 智能投顾建议</title>
+  <style>
+    :root{
+      --bg: #fbf3ea;
+      --card: #ffffff;
+      --border: #eadfd3;
+      --text: #2b2b2b;
+      --muted: #6f6a63;
+      --primary: #a31818;
+      --shadow: 0 10px 30px rgba(25, 10, 10, .06);
+      --radius: 14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
+    }
+    *{ box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: var(--sans);
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 20% 0%, #fff8f1 0%, var(--bg) 60%, var(--bg) 100%);
+      padding: 24px;
+    }
+
+    .topbar{
+      max-width: 1100px;
+      margin: 0 auto 18px auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 14px 18px;
+      background: rgba(255,255,255,.65);
+      backdrop-filter: blur(6px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .brand-logo{
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      overflow:hidden;
+      box-shadow: 0 6px 14px rgba(163,24,24,.18);
+      flex: 0 0 auto;
+    }
+    .brand-logo img{
+      width:100%; height:100%; object-fit:cover; display:block;
+    }
+    .brand-title{ line-height: 1.1; min-width: 0; }
+    .brand-title .h1{
+      font-weight: 800;
+      font-size: 20px;
+      color: var(--primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .brand-title .sub{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .badge{
+      background: var(--primary);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 8px 18px rgba(163,24,24,.18);
+    }
+
+    .container{
+      max-width: 1100px;
+      margin: 0 auto;
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap: 18px;
+      align-items:start;
+    }
+    @media (max-width: 1000px){
+      .container{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card-hd{
+      padding: 14px 16px;
+      border-bottom: 1px solid #f0e7dc;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      background: linear-gradient(180deg, rgba(251,243,234,.55) 0%, rgba(255,255,255,.85) 100%);
+    }
+    .card-title{
+      font-weight: 800;
+      color: #3a2a2a;
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width:0;
+    }
+    .dot{
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 0 4px rgba(163,24,24,.10);
+      flex: 0 0 auto;
+    }
+    .card-bd{ padding: 14px 16px; }
+
+    /* 顶部摘要 */
+    .summary-grid{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 900px){
+      .summary-grid{ grid-template-columns: repeat(2, 1fr); }
+    }
+    .stat{
+      border: 1px solid #f0e7dc;
+      border-radius: 12px;
+      padding: 12px;
+      background: #fff;
+    }
+    .stat .k{ font-size: 12px; color: var(--muted); }
+    .stat .v{ font-size: 18px; font-weight: 900; margin-top: 4px; color: #2c1d1d; }
+
+    /* 用户建议列表容器 */
+    .user-grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding: 14px;
+    }
+
+    /* 右侧 JSON / 合规卡片复用样式 */
+    .codebox{
+      font-family: var(--mono);
+      font-size: 12px;
+      background: #101010;
+      color: #eaeaea;
+      border-radius: 12px;
+      padding: 12px;
+      overflow:auto;
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 10px 20px rgba(0,0,0,.08);
+      white-space: pre;
+    }
+    .pill{
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #f0e7dc;
+      background: #fff;
+      color: #5c4e4e;
+      white-space: nowrap;
+    }
+    .pill.red{ border-color: rgba(163,24,24,.25); color: var(--primary); background: rgba(163,24,24,.06); }
+    .pill.green{ border-color: rgba(39,174,96,.25); color: #1e8449; background: rgba(39,174,96,.08); }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--primary);
+      color:#fff;
+      font-weight: 800;
+      border: 1px solid rgba(0,0,0,.06);
+      text-decoration:none;
+      box-shadow: 0 10px 20px rgba(163,24,24,.18);
+    }
+    .btn.secondary{
+      background: #fff;
+      color: var(--primary);
+      border: 1px solid rgba(163,24,24,.22);
+      box-shadow: none;
+    }
+    .muted{ color: var(--muted); font-size: 12px; }
+  
+    /* Added styles for user card */
+    .user-card {
+      background: #fff;
+      border: 1px solid #f0e7dc;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+    .user-hd {
+      padding: 12px 16px;
+      background: #fafafa;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .user-hd .left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .user-id {
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .user-bd {
+      padding: 16px;
+    }
+    .kv {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px 16px;
+      margin-bottom: 16px;
+    }
+    .kv .k {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: right;
+      min-width: 80px;
+    }
+    .kv .v {
+      font-size: 14px;
+    }
+    .section {
+      margin-top: 16px;
+    }
+    .sec-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: var(--primary);
+    }
+    .actions .act-item {
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+  </style>
+</head>
+
+<body>
+  <!-- 顶部栏 -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-logo" aria-hidden="true">
+        <img src="53af74ea21cbcce202e1a82b1562d1be.png" alt="logo" />
+      </div>
+      <div class="brand-title">
+        <div class="h1">AlphaMind 智能投顾建议</div>
+        <div class="sub">画像 × 风险评估 × 资产配置 × 合规输出</div>
+      </div>
+    </div>
+    <div class="badge">Beta</div>
+  </div>
+
+  <div class="container">
+    <!-- 左侧：建议 -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title"><span class="dot"></span>建议总览</div>
+        <div class="muted">生成时间：2025-12-15 22:46:19</div>
+      </div>
+      <div class="card-bd">
+        <!-- 顶部摘要统计：可选 -->
+        <div class="summary-grid">
+          <div class="stat"><div class="k">用户数</div><div class="v">20</div></div>
+          <div class="stat"><div class="k">进取型</div><div class="v">7</div></div>
+          <div class="stat"><div class="k">稳健型</div><div class="v">13</div></div>
+          <div class="stat"><div class="k">保守型</div><div class="v">0</div></div>
+        </div>
+      </div>
+
+      <!-- 用户卡片列表（由 Python 填充） -->
+      <div class="user-grid">
+                <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 0</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-0">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-0">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">建议以稳健为主，适度分散投资，优先保障流动性与抗风险能力，逐步积累财富。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">以上建议仅供参考，不构成任何投资承诺或具体操作指引。市场有风险，投资需谨慎。投资者应根据自身财务状况、风险承受能力及投资目标独立决策。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>当前资产规模较大，但负债存在，需优先规划债务管理。</li>
+<li>年龄较轻，具备长期投资优势，可适度配置成长型资产。</li>
+<li>教育程度为高中及以下，建议优先选择低门槛、易理解的理财工具。</li>
+<li>风险偏好倾向稳健，应避免高波动产品，注重本金安全。</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议将部分资金用于偿还高息债务，提升净资产；保留3~6个月生活费作为应急资金，确保流动性。</div>
+<div class='act-item'><strong>组合执行:</strong> 可配置50%于现金管理类或短期债券基金，30%于宽基指数基金（如沪深300、中证500），20%于稳健型混合或养老目标基金，实现风险分散。</div>
+<div class='act-item'><strong>风险控制:</strong> 避免投资复杂金融产品或个股，定期评估组合表现，每年调整一次配置比例，保持风险与目标匹配。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 1</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-1">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-1">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">54岁稳健型投资者，资产55.5万，负债12.1万，建议以保值增值为主，适度配置低风险产品。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于用户提供的信息及模型预测生成，不构成具体投资操作建议。市场有风险，投资需谨慎。过往业绩不预示未来表现，投资者应根据自身情况独立决策。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>当前资产净值约43.5万，负债率约21.7%，财务结构较健康。</li>
+<li>风险偏好为稳健型，适合中低风险投资组合，追求稳定收益。</li>
+<li>建议配置以债券基金、货币基金、银行理财及优质固收类产品为主。</li>
+<li>可适度参与宽基指数基金，控制权益类仓位在20%-30%以内。</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议将可投资资金优先覆盖短期流动性需求，保留3-6个月生活费作为应急储备。剩余资金用于配置稳健型资产组合。</div>
+<div class='act-item'><strong>组合执行:</strong> 建议配置：60%债券基金/银行理财、20%货币基金、20%宽基指数基金（如沪深300、中证500等）。可通过定期定额方式分批建仓，降低择时风险。</div>
+<div class='act-item'><strong>风险控制:</strong> 避免高杠杆、高波动产品，不参与个股投机。定期审视组合，每年调整一次，保持风险暴露在可控范围内。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 2</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-2">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-2">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">49岁家庭负担较重，建议以稳健配置为主，兼顾子女教育与资产保值，控制风险，逐步积累财富。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于用户提供的信息及模型预测生成，不构成具体投资推荐。投资有风险，入市需谨慎。市场波动可能导致本金损失，过往表现不代表未来收益。用户应根据自身情况独立决策，并咨询专业财务顾问。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>当前净资产约15万元，负债35万元，需优先关注债务压力与家庭财务安全。</li>
+<li>风险偏好倾向稳健，适合配置中低风险产品，如国债、银行理财、债券基金等。</li>
+<li>建议为子女教育预留专款，可选择定期存款或教育储蓄型保险作为储备。</li>
+<li>避免高风险投资，如股票、期货等，除非有明确知识储备与风控能力。</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 优先偿还高息债务，优化负债结构；将部分资产配置于流动性较好的货币基金或短期理财，确保家庭应急资金充足。</div>
+<div class='act-item'><strong>组合执行:</strong> 建议配置60%于固定收益类资产（如国债、银行理财、债券型基金），30%于混合型基金或指数基金（如沪深300ETF），10%用于现金管理或应急储备。</div>
+<div class='act-item'><strong>风险控制:</strong> 避免集中投资于单一资产或高波动产品；定期审视家庭财务状况，根据收入变化和子女教育需求调整配置。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 3</div>
+              <span class="pill red">进取型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-3">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-3">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">您具备一定投资能力，建议配置进取型组合，适度承担风险以提升长期收益潜力。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于当前信息生成，不构成具体投资操作指导。市场有风险，投资需谨慎。过往业绩不代表未来表现，不保证收益，不承诺本金安全。请根据个人情况审慎决策。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>当前净资产约5.7万元，债务压力较高，建议优先理清负债结构。</li>
+<li>风险偏好倾向进取型，适合配置权益类资产以追求更高回报。</li>
+<li>家庭有两名子女，需兼顾教育金储备与家庭财务安全。</li>
+<li>建议以长期投资为主，通过定投方式分散市场波动风险。</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议优先偿还高息债务，保留3-6个月生活应急资金，再将剩余可投资资金用于组合配置。</div>
+<div class='act-item'><strong>组合执行:</strong> 可考虑配置中高风险资产（如权益类指数基金、混合型基金等），建议以定投方式分批建仓，避免择时风险。</div>
+<div class='act-item'><strong>风险控制:</strong> 定期复盘组合表现，根据市场变化和家庭财务状况动态调整，不追高、不重仓单一资产。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 4</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-4">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-4">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">39岁，中等收入，资产较充裕，建议以稳健为主，兼顾适度增长，分散配置降低波动。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于用户提供的信息及模型预测生成，不构成投资推荐或承诺收益。市场有风险，投资需谨慎。具体操作请结合个人实际情况并咨询专业理财顾问。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>当前风险偏好倾向稳健，适合中低风险资产配置</li>
+<li>可配置部分权益类资产以提升长期收益潜力</li>
+<li>建议优化负债结构，降低财务压力</li>
+<li>保持流动性，应对突发资金需求</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议将现金及低风险资产（如货币基金、定期存款）维持在总资产的30%左右，确保应急资金充足；剩余资金可配置于债券基金、混合型基金等中低风险产品。</div>
+<div class='act-item'><strong>组合执行:</strong> 可考虑将60%资产配置于固定收益类（如国债、高等级信用债基金），30%配置于权益类（如宽基指数基金或行业均衡型基金），10%用于现金管理或短期理财，实现风险分散。</div>
+<div class='act-item'><strong>风险控制:</strong> 定期审视投资组合，根据市场波动和自身风险承受能力动态调整；避免集中投资单一资产；建议每年至少进行一次全面资产再平衡。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 5</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-5">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-5">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">58岁稳健型投资者，资产82.4万，负债23.4万，建议以保值增值为主，适度配置权益类资产。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于用户画像和模型预测生成，不构成投资建议或收益承诺。市场有风险，投资需谨慎。实际投资决策请结合个人情况并咨询专业顾问。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>年龄接近退休，建议以稳健为主，降低市场波动影响。</li>
+<li>当前资产负债比合理，可适度配置中低风险产品。</li>
+<li>家庭有3个子女，需兼顾教育与养老支出规划。</li>
+<li>建议优先配置固定收益类和低波动权益类资产，如债券基金、宽基指数ETF等。</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议将流动资金优先用于应急储备和短期理财，剩余资金按风险承受能力配置长期资产，如配置50%以上于中低风险产品，如银行理财、国债、债券基金等。</div>
+<div class='act-item'><strong>组合执行:</strong> 可配置20%-30%于权益类资产（如沪深300、中证500指数基金），其余配置于固定收益类产品，确保组合整体波动较小，符合稳健型偏好。</div>
+<div class='act-item'><strong>风险控制:</strong> 定期审视投资组合，避免单一资产比例过高；建议每年复盘一次，根据市场变化和家庭支出需求调整配置比例。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 6</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-6">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-6">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">年轻高学历，资产基础良好，建议稳健配置，兼顾成长与安全，逐步建立长期投资体系。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于用户当前财务状况与风险偏好生成，不构成具体投资操作建议。市场有风险，投资需谨慎。过往业绩不代表未来表现，不承诺收益，不保证本金安全。请根据自身情况独立决策或咨询专业金融顾问。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>当前风险偏好倾向稳健，适合中低波动资产配置。</li>
+<li>资产净值较高，可适度参与权益类投资以提升长期收益潜力。</li>
+<li>应优先偿还高息负债，优化负债结构。</li>
+<li>建议通过指数基金或ETF分散投资，避免单一资产风险。</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议将流动资金优先用于偿还高利率债务，降低财务成本；剩余资金可分阶段投入投资组合，保持现金储备以应对突发需求。</div>
+<div class='act-item'><strong>组合执行:</strong> 可配置60%于低风险固定收益类资产（如债券基金、货币基金），30%于权益类资产（如宽基指数基金或行业ETF），10%作为应急或灵活配置资金。</div>
+<div class='act-item'><strong>风险控制:</strong> 避免集中投资个股或高波动产品；定期审视组合表现，根据市场变化适时再平衡；保持长期视角，避免短期情绪化操作。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 7</div>
+              <span class="pill red">进取型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-7">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-7">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">51岁，中等收入，资产较充裕，建议适度配置权益类资产，平衡长期增值与短期压力。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于用户提供的信息生成，不构成具体投资操作建议。投资有风险，入市需谨慎。市场波动可能导致本金损失，过往业绩不代表未来表现。请根据自身风险承受能力审慎决策。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>当前风险偏好倾向进取型，可适度承担波动以追求更高收益。</li>
+<li>家庭有子女，需兼顾教育支出与长期财务安全。</li>
+<li>建议将净资产中较高比例配置于股票型基金或指数ETF，以匹配增长潜力。</li>
+<li>保持一定流动性以应对突发支出或债务压力。</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议将可投资资产中约60%-70%配置于权益类资产（如宽基指数基金、行业主题ETF），20%-30%配置于债券或固收类产品，剩余10%作为现金或货币基金以备应急。</div>
+<div class='act-item'><strong>组合执行:</strong> 可优先选择跟踪沪深300、中证500等主流宽基指数的低费率ETF产品，分散布局，避免集中风险。定期定额投资，平滑市场波动影响。</div>
+<div class='act-item'><strong>风险控制:</strong> 设定止盈止损策略，关注市场趋势与个人负债情况，避免杠杆操作。建议每半年审视一次投资组合，根据市场变化与家庭需求动态调整。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 8</div>
+              <span class="pill red">进取型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-8">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-8">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">年轻且资产基础良好，建议采用进取型配置，适度提升权益类资产比例，追求长期增值潜力。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于用户画像及风险偏好生成，不构成具体投资操作建议。市场有风险，投资需谨慎。过往业绩不预示未来表现，实际收益可能低于预期。请根据自身情况独立判断，或咨询专业机构。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>年龄29岁，处于财富积累黄金期，可承受较高波动。</li>
+<li>当前净资产约125万元，具备一定投资能力，建议优化资产配置。</li>
+<li>风险偏好为进取型，适合配置较高比例的权益类资产（如股票型基金、指数ETF等）。</li>
+<li>建议定期审视投资组合，动态调整以应对市场变化。</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议将可投资资金中的60%-70%配置于权益类资产，如宽基指数基金或行业ETF，剩余部分用于债券、货币基金等稳健资产，保持流动性。</div>
+<div class='act-item'><strong>组合执行:</strong> 可采用定投方式分散买入，降低择时风险；优先选择费率低、跟踪误差小的指数基金或ETF，关注A股、港股及全球市场多元化配置。</div>
+<div class='act-item'><strong>风险控制:</strong> 设置止损机制或定期再平衡策略，避免单一资产过度集中；持续关注宏观经济与政策变化，及时调整组合以应对市场波动。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 9</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-9">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-9">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">24岁年轻投资者，资产基础良好，建议以稳健为主，兼顾长期成长，合理配置降低波动风险。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于用户当前风险偏好及财务状况生成，不构成任何投资承诺或保证收益。市场有风险，投资需谨慎，具体决策请结合自身情况及专业意见。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>当前风险偏好提示为稳健型，适合中低波动资产配置。</li>
+<li>资产净值较高，可适度参与权益类投资以增强长期收益潜力。</li>
+<li>建议保持一定现金及固定收益类资产，应对短期波动与突发需求。</li>
+<li>当前无子女负担，可适当延长投资周期，提升复利效应。</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议将可投资资金按比例配置于现金管理类、债券类及权益类资产，如60%稳健型产品（如纯债基金、货币基金）、30%权益类（如宽基指数基金）、10%现金备用。</div>
+<div class='act-item'><strong>组合执行:</strong> 可选择定投方式参与指数基金（如沪深300、中证500等），分散风险，平滑成本，避免择时风险。</div>
+<div class='act-item'><strong>风险控制:</strong> 建议定期审视组合表现（每季度一次），根据市场变化和个人情况动态调整，避免集中投资，保持资产分散。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 10</div>
+              <span class="pill red">进取型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-10">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-10">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">43岁中高收入家庭，资产充足，建议采取进取型配置，兼顾长期增值与家庭保障。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于用户提供的信息生成，不构成具体投资操作建议，不承诺收益，不保证本金安全。投资有风险，入市需谨慎。市场波动可能导致资产价值变动，建议根据自身风险承受能力审慎决策。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>当前风险偏好提示为进取型，适合适度承担风险以追求更高长期回报。</li>
+<li>家庭有子女，需兼顾教育金储备与家庭财务安全。</li>
+<li>可配置权益类资产比例较高，如股票型基金、宽基指数ETF等。</li>
+<li>建议保留部分流动性资产，应对突发支出和债务压力。</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议将可用资金（资产减去债务后约54.96万元）中，约40%-50%配置于权益类资产，30%-40%用于固收类及现金管理，10%-20%用于保障类或另类投资。</div>
+<div class='act-item'><strong>组合执行:</strong> 可选择配置宽基指数基金（如沪深300、中证500）、行业主题基金（如科技、消费）或ETF，分散风险；同时可考虑配置债券基金或银行理财以平衡波动。</div>
+<div class='act-item'><strong>风险控制:</strong> 定期审视投资组合，根据市场变化和家庭状况调整；建议配置足额保险（如重疾、意外、寿险）以降低财务风险；避免杠杆投资及过度集中单一资产。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 11</div>
+              <span class="pill red">进取型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-11">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-11">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">63岁用户资产较充裕，风险偏好倾向进取，建议在控制风险前提下适度配置权益类资产，提升长期收益潜力。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于用户提供的信息及模型预测生成，不构成具体投资建议或收益承诺。市场有风险，投资需谨慎。用户应根据自身财务状况、风险偏好及市场变化独立决策，必要时咨询专业金融顾问。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>当前净资产约79.9万元，具备一定抗风险能力，适合适度承担投资波动。</li>
+<li>年龄接近退休，建议平衡长期增长与资金安全，避免过度集中单一资产。</li>
+<li>进取型风险偏好可考虑配置股票型基金、混合型基金或宽基指数ETF，提升收益空间。</li>
+<li>应定期审视组合，根据市场变化及自身健康、家庭状况动态调整策略。</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议将可投资资金分为三部分：30%配置于低风险产品（如货币基金、国债），40%配置于中风险产品（如混合型基金、债券基金），30%配置于权益类资产（如指数基金、行业ETF），兼顾流动性与增长性。</div>
+<div class='act-item'><strong>组合执行:</strong> 优先选择长期业绩稳定、费用较低的指数基金或被动型产品，分散投资于不同板块，如消费、科技、医疗等，避免单一行业过度集中。</div>
+<div class='act-item'><strong>风险控制:</strong> 设定止损止盈机制，定期（如每季度）复盘投资组合，根据市场波动和自身风险承受能力适时调整配置比例，避免情绪化操作。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 12</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-12">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-12">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">53岁稳健型投资者，资产约119万，负债约30万，建议以稳健配置为主，兼顾长期增值与风险控制。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于用户画像及模型预测，不构成具体投资推荐。市场有风险，投资需谨慎。过往表现不代表未来收益，不承诺收益或保本，具体操作请咨询专业理财顾问。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>当前风险偏好倾向稳健，适合中低风险资产配置</li>
+<li>家庭有两名子女，需关注教育与养老双重规划</li>
+<li>建议降低高波动资产比例，提升流动性与安全性</li>
+<li>可逐步配置债券型基金、固收+产品及优质指数基金</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议将可投资资金优先用于填补债务缺口，同时留足应急资金（建议3-6个月生活费），剩余资金用于长期资产配置。</div>
+<div class='act-item'><strong>组合执行:</strong> 建议配置比例：现金及货币基金20%、债券及固收+产品50%、指数基金或低波权益类20%、其他（如黄金等）10%。可选择低费率的宽基指数基金或ETF作为权益部分。</div>
+<div class='act-item'><strong>风险控制:</strong> 定期审视组合，每半年调整一次；避免集中投资单一产品；关注市场波动，但不因短期波动频繁操作。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 13</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-13">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-13">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">54岁高学历用户，资产较充裕但负债存在，建议以稳健配置为主，兼顾长期增值与风险控制。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于用户提供的信息及模型预测生成，不构成具体投资建议或收益承诺。市场有风险，投资需谨慎。实际投资应结合个人具体情况及专业顾问意见进行决策。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>年龄接近退休，应注重资产保值与现金流规划</li>
+<li>当前风险偏好提示为稳健型，匹配中低波动投资策略</li>
+<li>建议配置以债券、固收+、优质指数基金为主</li>
+<li>控制权益类比例，避免过度集中与高波动产品</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议将净资产中约30%-40%用于流动性管理（如货币基金、短债基金），30%-40%配置固收类产品，20%-30%配置权益类资产（如宽基指数基金或混合型基金），确保资产结构均衡。</div>
+<div class='act-item'><strong>组合执行:</strong> 可选择配置中长期债券基金、银行理财（R2-R3级）、沪深300或中证500指数基金（定投方式），避免单一行业或个股，分散风险。</div>
+<div class='act-item'><strong>风险控制:</strong> 定期审视组合波动，根据市场变化动态调整权益类配置比例；设置止损机制或预警阈值，避免情绪化操作。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 14</div>
+              <span class="pill red">进取型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-14">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-14">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">52岁，资产较充裕，风险承受能力较强，建议适度配置权益类资产以提升长期收益。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于用户提供的信息及模型预测生成，不构成具体投资推荐。市场有风险，投资需谨慎。建议在充分了解产品风险前提下，结合个人情况自主决策。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>年龄52岁，处于财富积累与传承兼顾阶段，建议兼顾长期增值与稳健性。</li>
+<li>资产净值约65万元，负债率适中，具备一定抗风险能力。</li>
+<li>风险偏好倾向进取型，可适度配置股票型基金或指数基金以获取市场增长红利。</li>
+<li>家庭有3名子女，需考虑教育资金安排与未来赡养规划。</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议将资金分为三部分：短期现金管理（15%）、中长期稳健投资（40%）、进取型权益投资（45%），确保流动性与增长性平衡。</div>
+<div class='act-item'><strong>组合执行:</strong> 可配置宽基指数基金（如沪深300、中证500）或混合型基金，搭配少量行业主题基金，分散风险，避免单一资产集中。</div>
+<div class='act-item'><strong>风险控制:</strong> 定期审视投资组合，每季度评估一次，根据市场变化与家庭需求动态调整；设置止损线或定投策略，降低波动影响。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 15</div>
+              <span class="pill red">进取型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-15">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-15">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">55岁进取型投资者，资产较充裕，建议适度配置权益类以博取长期收益，兼顾养老与家庭保障。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于用户画像与风险偏好模型生成，不构成投资推荐或收益保证。市场有风险，投资需谨慎。具体操作请结合个人实际情况，并咨询专业理财顾问。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>当前风险偏好为进取型，适合适度参与高波动资产获取长期增值潜力。</li>
+<li>家庭有子女，需平衡子女教育与自身养老资金需求，建议做阶段化资金规划。</li>
+<li>可考虑配置权益类资产（如宽基指数基金、混合型基金），但不宜过度集中。</li>
+<li>建议每年定期评估组合表现，根据市场与家庭状况动态调整配置比例。</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议将可投资资产划分为三部分：40%用于权益类投资（如指数基金或混合型基金），30%用于稳健型产品（如债券基金或银行理财），30%用于流动性储备及应急资金。</div>
+<div class='act-item'><strong>组合执行:</strong> 优先选择低费率、历史表现稳定的指数基金或ETF，分散投资于沪深300、中证500等宽基指数，避免单一股票或行业集中风险。</div>
+<div class='act-item'><strong>风险控制:</strong> 设置止损止盈纪律，如单只基金亏损超过15%时考虑减仓；定期（如每季度）审视投资组合，根据市场变化和家庭状况动态调整。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 16</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-16">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-16">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">43岁稳健型投资者，资产较充裕，建议以中低风险资产为主，兼顾长期增值，合理配置保障与教育资金。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于用户提供的信息生成，不构成具体投资操作建议。市场有风险，投资需谨慎。过往业绩不预示未来表现，不承诺收益或本金安全。请根据自身情况谨慎决策。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>当前风险偏好为稳健型，适合中低风险投资策略。</li>
+<li>家庭有子女，需预留教育资金，建议配置部分稳健型理财或债券基金。</li>
+<li>总资产179.5万元，负债61.3万元，净资产充足，可适度增加长期投资比例。</li>
+<li>建议分散配置，避免过度集中于单一资产类别，提升抗风险能力。</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议将流动资金配置于货币基金或短期理财，确保家庭应急储备；中长期资金可考虑配置债券型基金、银行理财或低波指数基金。</div>
+<div class='act-item'><strong>组合执行:</strong> 可构建60%稳健型资产（如债券基金、固收+产品）、30%平衡型资产（如宽基指数基金、混合基金）、10%防御型资产（如黄金ETF或现金管理工具）的组合。</div>
+<div class='act-item'><strong>风险控制:</strong> 定期审视组合，每年调整一次配置比例；避免追高热门资产，优先选择分红稳定、波动较小的产品。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 17</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-17">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-17">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">25岁，资产较充裕，负债适中，建议以稳健为主，兼顾长期增值，合理配置资产。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于用户提供的信息及模型预测生成，不构成具体投资建议或收益承诺。市场有风险，投资需谨慎。请根据自身风险承受能力独立决策，必要时咨询专业金融顾问。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>当前风险偏好提示为稳健型，适合中低风险投资组合。</li>
+<li>可考虑配置债券型基金、货币基金及优质股息型股票或指数基金。</li>
+<li>建议保持一定现金储备以应对突发支出或投资机会。</li>
+<li>长期投资应坚持定投策略，平滑市场波动，降低择时风险。</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议将资产按比例分配至现金类（15%-20%）、固定收益类（40%-50%）、权益类（30%-40%）产品，保持流动性与收益平衡。</div>
+<div class='act-item'><strong>组合执行:</strong> 可选择配置中长期表现稳定的债券基金、宽基指数基金（如沪深300、中证500）或红利指数基金，通过定投方式逐步建仓。</div>
+<div class='act-item'><strong>风险控制:</strong> 避免集中投资于单一资产或高波动品种，定期审视组合表现，根据市场变化和自身情况动态调整，保持风险敞口在可控范围内。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 18</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-18">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-18">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">57岁用户，资产56万，负债35万，建议稳健配置，兼顾安全与适度增值。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于用户当前信息生成，不构成投资承诺或具体操作指令。市场有风险，投资需谨慎。实际操作请结合个人财务状况、风险承受能力及专业顾问意见。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>当前风险偏好提示为稳健型，适合中低风险投资组合。</li>
+<li>建议优先偿还部分高息负债，降低财务压力。</li>
+<li>可配置银行理财、债券基金、国债等低波动产品。</li>
+<li>预留应急资金，避免因突发事件影响投资计划。</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议保留6-12个月生活开支作为应急资金，优先偿还高利率债务，释放财务压力，剩余资金用于稳健投资。</div>
+<div class='act-item'><strong>组合执行:</strong> 建议将可投资资金配置于银行理财、中短债基金、国债逆回购等低风险产品，可适度配置少量权益类资产（如宽基指数基金）增强长期收益潜力，比例建议不超过30%。</div>
+<div class='act-item'><strong>风险控制:</strong> 避免高杠杆操作，不投资非标产品或承诺高回报项目，定期审视组合表现，根据市场变化和自身情况动态调整。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 19</div>
+              <span class="pill ">稳健型</span>
+              <span class="pill">风险概率：N/A</span>
+            </div>
+            <a class="btn secondary" href="#user-19">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-19">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">40岁家庭有孩，资产74万负债27万，建议以稳健为主，兼顾长期增值与风险控制。</div>
+              <div class="k">用户关注</div><div class="v">N/A</div>
+              <div class="k">免责声明</div><div class="v">本建议基于用户提供的信息及模型预测，不构成具体投资操作建议，不承诺收益，不保证投资结果。市场有风险，投资需谨慎。请根据自身情况独立决策，必要时咨询专业理财顾问。</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                <li>当前风险偏好倾向稳健，适合中低风险资产配置。</li>
+<li>建议优先保障家庭财务安全，适当配置固定收益类与稳健型基金。</li>
+<li>可考虑部分资金投入指数基金或债券型基金，分散风险。</li>
+<li>定期审视投资组合，根据市场变化和个人情况动态调整。</li>
+
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                <div class='act-item'><strong>资金安排:</strong> 建议将可投资资金优先用于应急储备（3-6个月生活费），剩余部分用于稳健投资。可考虑将资产的40%-60%配置于低风险产品，如银行理财、国债、货币基金等；20%-30%配置于债券型基金或混合偏债基金；10%-20%配置于权益类资产，如宽基指数基金。</div>
+<div class='act-item'><strong>组合执行:</strong> 可选择定投方式分散买入指数基金（如沪深300、中证500等），减少择时风险。同时配置部分纯债基金或固收+产品，增强组合稳定性。避免集中投资于单一行业或个股。</div>
+<div class='act-item'><strong>风险控制:</strong> 定期（如每季度）回顾投资组合表现，确保符合风险承受能力。设置止损或止盈机制，避免情绪化操作。根据家庭支出、子女教育规划等长期目标调整配置比例。</div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+    </div>
+
+    <!-- 右侧：请求数据预览 + 字段映射（示意） -->
+    <div>
+      <div class="card" style="margin-bottom: 18px;">
+        <div class="card-hd">
+          <div class="card-title"><span class="dot"></span>请求数据预览</div>
+          <span class="pill red">POST /advisor/generate</span>
+        </div>
+        <div class="card-bd">
+          <div class="muted" style="margin-bottom:10px;">
+            实际系统对接时，可直接 POST 下列 JSON 结构给后端，后端按模板渲染结构化建议。
+          </div>
+          <div class="codebox">{
+  "users": [
+    {
+      "id": 0,
+      "profile": {
+        "age": 28,
+        "education": "高中及以下",
+        "income10k": 12.5,
+        "asset10k": 50.0,
+        "debt10k": 20.0,
+        "children": 1,
+        "exp_years": 3
+      },
+      "model_predictions": {
+        "risk_prob": 0.45,
+        "risk_level": "稳健型"
+      }
+    },
+    {
+      "id": 1,
+      "profile": {
+        "age": 45,
+        "education": "本科",
+        "income10k": 30.0,
+        "asset10k": 200.0,
+        "debt10k": 50.0,
+        "children": 2,
+        "exp_years": 10
+      },
+      "model_predictions": {
+        "risk_prob": 0.2,
+        "risk_level": "稳健型"
+      }
+    }
+  ]
+}</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 18px;">
+        <div class="card-hd">
+          <div class="card-title"><span class="dot"></span>字段与模型对应</div>
+        </div>
+        <div class="card-bd">
+          <div class="codebox" style="background:#fff7ef;color:#3b2f2f;border:1px solid #f0e7dc;box-shadow:none;white-space:pre-wrap;">
+age → profile.age (int)
+education → profile.education (str)
+income10k → profile.income10k (float)
+asset10k → profile.asset10k (float)
+debt10k → profile.debt10k (float)
+children → profile.children (int)
+exp_years → profile.exp_years (int)
+risk_prob → model_predictions.risk_prob (float)
+portfolio → portfolio_recommendation (str)
+rag_evidence → sources (list)
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd">
+          <div class="card-title"><span class="dot"></span>合规提示</div>
+          <span class="pill green">必读</span>
+        </div>
+        <div class="card-bd">
+          <ul>
+            <li>不承诺收益，不出现“保证盈利/稳赚”等表述。</li>
+            <li>不提供具体个股/买卖点；可给 ETF/指数基金/资产类别方向。</li>
+            <li>每条建议包含风险提示与免责声明。</li>
+            <li>sources 至少包含 1 条 compliance 类来源。</li>
+          </ul>
+          <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+            <a class="btn" href="#top">回到顶部</a>
+            <a class="btn secondary" href="javascript:window.print()">打印/导出 PDF</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <a id="top"></a>
+</body>
+</html>
+

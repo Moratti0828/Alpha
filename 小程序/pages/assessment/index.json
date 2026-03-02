@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "风险测评",
+  "usingComponents": {
+    "t-search": "tdesign-miniprogram/search/search",
+    "t-tag": "tdesign-miniprogram/tag/tag"
+  }
+}

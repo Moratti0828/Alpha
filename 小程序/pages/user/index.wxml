@@ -1,0 +1,99 @@
+<view class="container">
+  <view class="header-bg"></view>
+
+  <view class="card user-info-card">
+    <view class="avatar-wrapper" bindtap="chooseAvatar">
+      <image class="avatar" src="{{displayAvatar}}" mode="aspectFill" binderror="handleImageError"></image>
+    </view>
+    <view class="info-content">
+      <view class="nickname-row">
+        <input type="nickname" class="nickname-input" placeholder="点击设置昵称" value="{{form.nickName}}" bindblur="onEditNickname" placeholder-class="placeholder-style"/>
+        <view class="edit-icon">✎</view>
+      </view>
+      <view class="badge"><text>AlphaMind 用户</text></view>
+    </view>
+  </view>
+
+  <view class="assessment-card card">
+    <view class="card-header">
+      <view class="card-title">AlphaMind 策略报告</view>
+      <view class="status-tag">Vanguard 模型</view>
+    </view>
+    
+    <view class="ai-summary">
+      <view class="summary-text">
+        你是 <text class="highlight">{{form.strategy_label || '稳健型'}}</text> 投资者。
+        建议采用“核心-卫星”策略，以稳健资产为基石。
+      </view>
+    </view>
+
+    <view class="radar-entry-box" bindtap="viewRadar">
+      <view class="left">
+        <view class="icon-radar">🕸️</view>
+        <view class="entry-text">
+          <view class="main">查看风险画像雷达</view>
+          <view class="sub">包含收益目标、抗风险能力等5维分析</view>
+        </view>
+      </view>
+      <view class="arrow-btn">Go ></view>
+    </view>
+  </view>
+
+  <view class="form-container {{showForm ? 'show' : ''}}">
+    <view class="form-header-bar">
+      <text class="f-title">完善画像信息</text>
+      <text class="f-close" bindtap="toggleForm">收起</text>
+    </view>
+    
+    <view class="form-grid">
+        <view class="form-item">
+          <text class="label">年龄 (岁)</text>
+          <input class="input" type="number" data-field="age" value="{{form.age}}" bindinput="onInput" />
+        </view>
+        <view class="form-item">
+          <text class="label">最高学历</text>
+          <picker bindchange="onEduChange" value="{{eduIndex}}" range="{{eduOptions}}">
+            <view class="input">{{form.education || '请选择'}}</view>
+          </picker>
+        </view>
+        <view class="form-item">
+            <text class="label">年收入 (万)</text>
+            <input class="input" type="digit" data-field="income" value="{{form.income}}" bindinput="onInput" />
+        </view>
+         <view class="form-item">
+            <text class="label">总资产 (万)</text>
+            <input class="input" type="digit" data-field="asset" value="{{form.asset}}" bindinput="onInput" />
+        </view>
+        <view class="form-item">
+            <text class="label">总负债 (万)</text>
+            <input class="input" type="digit" data-field="debt" value="{{form.debt}}" bindinput="onInput" />
+        </view>
+        <view class="form-item">
+            <text class="label">子女数</text>
+            <input class="input" type="number" data-field="children" value="{{form.children}}" bindinput="onInput" />
+        </view>
+        <view class="form-item">
+            <text class="label">投资经验 (年)</text>
+            <input class="input" type="number" data-field="exp_years" value="{{form.exp_years}}" bindinput="onInput" />
+        </view>
+        <view class="form-item full-width">
+          <text class="label">当前交易心理</text>
+          <picker bindchange="onActionChange" value="{{actionIndex}}" range="{{actionOptions}}">
+            <view class="input">{{actionLabel || '请选择当前心态'}}</view>
+          </picker>
+        </view>
+    </view>
+
+    <button class="save-btn-inner" bindtap="saveProfile">保存并更新模型</button>
+  </view>
+
+  <view class="footer-action-bar">
+    <view class="action-item secondary" bindtap="toggleForm">
+      <text class="icon">📝</text> 修改画像
+    </view>
+    <view class="action-item primary" bindtap="startAssessment">
+      <text class="icon">🚀</text> 重新评估
+    </view>
+  </view>
+
+</view>

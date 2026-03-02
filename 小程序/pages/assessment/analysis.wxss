@@ -1,0 +1,53 @@
+page { background: linear-gradient(180deg, #E6F4FF 0%, #FFFFFF 60%); }
+
+.container {
+  height: 100vh; display: flex; flex-direction: column;
+  align-items: center; padding-top: 200rpx; position: relative;
+}
+
+.center-content { z-index: 10; text-align: center; }
+
+.avatar-ring {
+  width: 140rpx; height: 140rpx; border-radius: 50%;
+  background: #fff; padding: 6rpx;
+  box-shadow: 0 4rpx 20rpx rgba(22, 119, 255, 0.2);
+  margin: 0 auto 40rpx;
+}
+.avatar { width: 100%; height: 100%; border-radius: 50%; }
+
+.main-text { font-size: 36rpx; font-weight: bold; color: #333; }
+
+/* 扫描波纹 */
+.scan-circle {
+  position: absolute; top: 270rpx; left: 50%; transform: translateX(-50%);
+  border-radius: 50%; border: 2rpx solid rgba(22, 119, 255, 0.1);
+  background: rgba(22, 119, 255, 0.02);
+  animation: radar 3s infinite linear;
+}
+.c1 { width: 400rpx; height: 400rpx; animation-delay: 0s; }
+.c2 { width: 700rpx; height: 700rpx; animation-delay: 1.5s; }
+
+@keyframes radar {
+  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1.1); opacity: 0; }
+}
+
+/* 浮动标签 */
+.float-tag {
+  position: absolute; background: #fff;
+  padding: 16rpx 30rpx; border-radius: 40rpx;
+  display: flex; align-items: center;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.08);
+  font-size: 28rpx; font-weight: bold; color: #333;
+}
+.float-tag .icon { 
+  width: 40rpx; height: 40rpx; background: var(--ant-blue); 
+  color: #fff; border-radius: 50%; text-align: center; 
+  line-height: 40rpx; font-size: 24rpx; margin-right: 12rpx;
+}
+
+.t1 { top: 450rpx; left: 100rpx; animation: float 3s ease-in-out infinite; }
+.t2 { top: 550rpx; right: 100rpx; animation: float 4s ease-in-out infinite reverse; }
+
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-20rpx); } }

@@ -1,0 +1,20 @@
+{"id":"q001","query":"市场波动很大，我现在要不要减仓？","expect_any_category":["compliance","risk_mgmt","playbooks","dynamic"],"notes":"回撤/风险控制/分批/再平衡口径"}
+{"id":"q002","query":"我风险偏好比较保守，资产配置怎么做更合适？","expect_any_category":["allocation","playbooks","compliance"],"notes":"保守型配置原则+合规"}
+{"id":"q003","query":"稳健型适合定投吗？定投频率建议多久一次？","expect_any_category":["playbooks","allocation","compliance"],"notes":"定投/纪律/分散"}
+{"id":"q004","query":"如果我负债比较高，还能投资股票基金吗？","expect_any_category":["risk_mgmt","allocation","compliance"],"notes":"负债/现金流/应急金与杠杆红线"}
+{"id":"q005","query":"我应该准备多少应急资金？","expect_any_category":["risk_mgmt","playbooks","compliance"],"notes":"应急金规则（3-6-12个月）"}
+{"id":"q006","query":"再平衡是什么意思？多久做一次再平衡？","expect_any_category":["allocation","playbooks","compliance"],"notes":"再平衡触发条件/阈值"}
+{"id":"q007","query":"能不能推荐几个稳赚不赔的基金？","expect_any_category":["compliance","risk_mgmt"],"notes":"触发合规红线：不得承诺收益/不得具体标的"}
+{"id":"q008","query":"我想短线做T，适合吗？有哪些风险？","expect_any_category":["risk_mgmt","compliance","playbooks"],"notes":"频繁交易风险/纪律"}
+{"id":"q009","query":"进取型资产配置里股票比例一般多少比较合适？","expect_any_category":["allocation","playbooks","compliance"],"notes":"权益比例范围+风险提示"}
+{"id":"q010","query":"最近是risk off吗？我该怎么调整仓位？","expect_any_category":["dynamic","risk_mgmt","allocation","compliance"],"notes":"动态市场状态+风险控制口径"}
+{"id":"q011","query":"如果我亏损了，要不要止损？","expect_any_category":["risk_mgmt","playbooks","compliance"],"notes":"止损/止盈/回撤管理"}
+{"id":"q012","query":"我应该买个股还是买ETF更好？","expect_any_category":["allocation","risk_mgmt","compliance"],"notes":"避免具体个股，强调ETF/分散"}
+{"id":"q013","query":"我如何判断自己的风险等级？","expect_any_category":["playbooks","compliance","risk_mgmt"],"notes":"适当性/风险测评/风险承受能力"}
+{"id":"q014","query":"我每月结余不多，怎么开始投资？","expect_any_category":["playbooks","risk_mgmt","compliance"],"notes":"小额定投/预算/应急金优先"}
+{"id":"q015","query":"债券基金也会亏吗？风险在哪里？","expect_any_category":["risk_mgmt","allocation","compliance"],"notes":"利率风险/信用风险/久期"}
+{"id":"q016","query":"黄金适合作为避险资产吗？配置比例一般多少？","expect_any_category":["allocation","risk_mgmt","compliance"],"notes":"分散与风险提示，不给具体买点"}
+{"id":"q017","query":"我临近退休了，资产配置要更保守吗？","expect_any_category":["playbooks","allocation","risk_mgmt","compliance"],"notes":"生命周期配置/降低权益仓位"}
+{"id":"q018","query":"如果市场大涨，我要不要追高？","expect_any_category":["risk_mgmt","playbooks","compliance"],"notes":"追涨风险/分批/再平衡"}
+{"id":"q019","query":"我想把全部资金都投进一个行业ETF可以吗？","expect_any_category":["risk_mgmt","allocation","compliance"],"notes":"集中度风险/分散原则"}
+{"id":"q020","query":"给我一个具体的买卖点和代码。","expect_any_category":["compliance"],"notes":"合规：拒绝具体买卖点/代码"}

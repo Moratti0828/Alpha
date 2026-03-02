@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>AlphaMind 使用后问卷调查</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{--brand:#8B0012;--accent:#FFA726;--bg:#FFF8F2;--text:#2C1A12;--border:#E7D9CD;--muted:rgba(44,26,18,.72);--shadow:0 10px 30px rgba(0,0,0,.06);--radius:18px;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Microsoft YaHei",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;background:radial-gradient(1200px 600px at 20% -10%, rgba(255,167,38,.18), transparent 60%),radial-gradient(900px 500px at 90% 0%, rgba(139,0,18,.12), transparent 55%),var(--bg);color:var(--text);}
+    .page{max-width:980px;margin:0 auto;padding:26px 16px 44px}
+    .topbar{display:flex;align-items:center;gap:14px;padding:14px;border:1px solid var(--border);border-radius:var(--radius);background:rgba(255,255,255,.7);box-shadow:var(--shadow);backdrop-filter:blur(10px);}
+    .logo{width:52px;height:52px}
+    .brand{flex:1;min-width:0}
+    .brand h1{margin:0;font-size:20px;color:var(--brand)}
+    .brand p{margin:4px 0 0;font-size:12px;color:var(--muted);line-height:1.5}
+    .pill{font-size:11px;font-weight:900;padding:6px 10px;border-radius:999px;background:rgba(255,167,38,.20);border:1px solid rgba(255,167,38,.35)}
+    .card{margin-top:16px;background:rgba(255,255,255,.88);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;}
+    .section-title{margin:8px 0 10px;font-size:13px;font-weight:950;color:var(--brand)}
+    .row{display:grid;grid-template-columns:1.2fr 1.8fr;gap:10px;align-items:center;margin:10px 0;}
+    @media(max-width:640px){.row{grid-template-columns:1fr}}
+    label{font-size:13px}
+    select,input[type="text"],textarea{width:100%;padding:10px 12px;border-radius:14px;border:1px solid #d9cabc;background:#fff;outline:none;font-size:13px;transition:box-shadow .15s,border-color .15s;}
+    textarea{min-height:92px;resize:vertical}
+    select:focus,input:focus,textarea:focus{border-color:rgba(255,167,38,.85);box-shadow:0 0 0 3px rgba(255,167,38,.22);}
+    .hint{font-size:12px;color:var(--muted);line-height:1.5}
+    .likert{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .likert .opt{display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:rgba(255,255,255,.7);cursor:pointer}
+    .likert input{accent-color:var(--brand)}
+    .qcard{padding:12px;border-radius:16px;background:rgba(255,248,242,.85);border:1px solid rgba(139,0,18,.10);margin:10px 0}
+    .qtitle{font-weight:900;margin-bottom:8px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
+    .btn{border:none;border-radius:999px;padding:10px 16px;cursor:pointer;font-weight:950;font-size:13px;display:inline-flex;align-items:center;gap:8px;}
+    .btn-primary{background:var(--brand);color:#fff}
+    .btn-primary:hover{background:var(--accent);color:#23140e}
+    .btn-ghost{background:transparent;border:1px dashed var(--border);color:var(--text)}
+    .status{font-size:12px;color:var(--muted)}
+    .bar{height:10px;border-radius:999px;background:rgba(139,0,18,.10);overflow:hidden}
+    .bar>div{height:100%;width:0%;background:linear-gradient(90deg, rgba(139,0,18,.9), rgba(255,167,38,.9));transition:width .25s}
+    .footer{margin-top:12px;font-size:11px;color:var(--muted)}
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.35);padding:16px}
+    .modal .box{max-width:520px;width:100%;background:#fff;border-radius:18px;border:1px solid var(--border);box-shadow:var(--shadow);padding:16px}
+    .modal .box h3{margin:0 0 6px;color:var(--brand)}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <img class="logo" src="alphamind_logo.png" alt="AlphaMind Logo" />
+      <div class="brand">
+        <h1>AlphaMind 使用后问卷调查</h1>
+        <p>本问卷用于了解您对 AlphaMind 的使用感受与后续使用意愿（匿名）。预计 3–5 分钟完成。</p>
+      </div>
+      <span class="pill">Survey</span>
+    </header>
+
+    <div class="card">
+      <div class="section-title">填写进度</div>
+      <div class="bar"><div id="progressFill"></div></div>
+      <div class="hint" style="margin-top:8px">1=非常不同意，5=非常同意。开放题可选填。</div>
+    </div>
+
+    <form id="surveyForm" class="card" onsubmit="event.preventDefault();submitSurvey();">
+      <div class="section-title">第一部分：基本信息</div>
+
+      <div class="row">
+        <label>性别</label>
+        <select name="gender" required>
+          <option value="" selected disabled>请选择</option>
+          <option value="male">男</option>
+          <option value="female">女</option>
+          <option value="other">其他</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label>年龄</label>
+        <select name="age_group" required>
+          <option value="" selected disabled>请选择</option>
+          <option value="18-25">18–25岁</option>
+          <option value="26-35">26–35岁</option>
+          <option value="36-45">36–45岁</option>
+          <option value="46-55">46–55岁</option>
+          <option value="56+">56岁及以上</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label>教育背景</label>
+        <select name="education" required>
+          <option value="" selected disabled>请选择</option>
+          <option value="hs_or_below">高中/中专及以下</option>
+          <option value="college">专科</option>
+          <option value="bachelor">本科</option>
+          <option value="master">硕士</option>
+          <option value="phd">博士</option>
+          <option value="other">其他</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label>职业领域</label>
+        <select name="profession" required>
+          <option value="" selected disabled>请选择</option>
+          <option value="finance">金融业</option>
+          <option value="tech">科技与互联网</option>
+          <option value="academia">学术界与科研</option>
+          <option value="public">公共服务</option>
+          <option value="ops">企业运营与管理</option>
+          <option value="freelance">自由职业/创业</option>
+          <option value="student">学生</option>
+          <option value="other">其他</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label>投资经验</label>
+        <select name="invest_exp" required>
+          <option value="" selected disabled>请选择</option>
+          <option value="<1">少于1年</option>
+          <option value="1-3">1–3年</option>
+          <option value="3-5">3–5年</option>
+          <option value="5+">5年以上</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label>是否使用过智能投顾/理财工具</label>
+        <select name="used_robo" required>
+          <option value="" selected disabled>请选择</option>
+          <option value="yes">是</option>
+          <option value="no">否</option>
+        </select>
+      </div>
+
+      <div class="section-title">第二部分：对 AlphaMind 系统功能的认知与评价（1–5 分）</div>
+      <div id="likertArea"></div>
+
+      <div class="section-title">第三部分：开放性问题（选答）</div>
+
+      <div class="row">
+        <label>1) 您认为 AlphaMind 系统最吸引您的功能是什么？为什么？</label>
+        <textarea name="open_attract" placeholder="可选填"></textarea>
+      </div>
+      <div class="row">
+        <label>2) 您对该系统在隐私保护、合规性方面还有哪些建议？</label>
+        <textarea name="open_privacy" placeholder="可选填"></textarea>
+      </div>
+      <div class="row">
+        <label>3) 您是否愿意为使用此类高级智能投顾服务支付一定费用？请说明理由。</label>
+        <textarea name="open_pay" placeholder="可选填"></textarea>
+      </div>
+
+      <div class="section-title">第四部分：可选联系方式（用于回访）</div>
+      <div class="row">
+        <label>邮箱（可选）</label>
+        <input name="contact_email" type="text" placeholder="可选填" />
+      </div>
+      <div class="row">
+        <label>电话（可选）</label>
+        <input name="contact_phone" type="text" placeholder="可选填" />
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" type="submit">提交问卷</button>
+        <button class="btn btn-ghost" type="button" onclick="goBack()">返回结果页</button>
+        <a class="btn btn-ghost" href="admin_login.html" style="text-decoration:none">管理员入口</a>
+        <span class="status" id="statusText">您的答卷将仅对管理员可见</span>
+      </div>
+
+      <div class="footer">
+        注：本页面为前端演示版，数据默认存储在浏览器本地（localStorage）。想做网络安全得让我有服务器权限。
+      </div>
+    </form>
+  </div>
+
+  <div class="modal" id="doneModal">
+    <div class="box">
+      <h3>感谢您的参与！</h3>
+      <div class="hint" id="doneText">已收到您的答卷。</div>
+      <div class="actions" style="margin-top:12px">
+        <button class="btn btn-primary" onclick="goBack()">返回结果页</button>
+        <button class="btn btn-ghost" onclick="closeModal()">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const LIKERT_ITEMS = ["我认为该系统能更好地理解我的投资需求", "多模态数据分析（如交易+对话）有助于提升投顾准确性", "动态风险偏好识别对我有实际价值", "系统提供的“可解释性建议”能增强我的信任感", "隐私保护技术（如联邦学习）是我选择该系统的重要因素", "我认为使用 AlphaMind 能帮助我做出更好的投资决策", "我认为该系统易于使用和学习", "我周围的人（如朋友、同事）会认可我使用此类系统", "我认为金融机构应提供此类智能投顾服务", "如果有机会，我愿意尝试使用 AlphaMind", "我信任该系统基于多模态数据生成的投资建议", "我认为系统提供的决策逻辑可解释性非常重要", "我认可该系统在隐私保护与数据安全上的设计", "我愿意在理解系统推理过程后采纳其建议", "我认为该系统在合规性与透明度上优于传统投顾"];
+    const STORAGE_KEY = "alphamind_survey_responses_v1";
+
+    function renderLikert(){
+      const root = document.getElementById("likertArea");
+      root.innerHTML = "";
+      LIKERT_ITEMS.forEach((text, idx) => {
+        const wrap = document.createElement("div");
+        wrap.className = "qcard";
+
+        const title = document.createElement("div");
+        title.className = "qtitle";
+        title.textContent = `${idx+1}. ${text}`;
+        wrap.appendChild(title);
+
+        const opts = document.createElement("div");
+        opts.className = "likert";
+        for(let v=1; v<=5; v++){
+          const id = `likert_${idx}_${v}`;
+          const label = document.createElement("label");
+          label.className = "opt";
+          label.setAttribute("for", id);
+          label.innerHTML = `<input id="${id}" type="radio" name="likert_${idx}" value="${v}" required /> <span>${v}</span>`;
+          opts.appendChild(label);
+        }
+        wrap.appendChild(opts);
+        root.appendChild(wrap);
+      });
+    }
+
+    function computeProgress(){
+      const form = document.getElementById("surveyForm");
+      const baseRequired = 6; // 第一部分 6 项
+      let baseDone = 0;
+      ["gender","age_group","education","profession","invest_exp","used_robo"].forEach(k=>{
+        const el = form.querySelector(`[name="${k}"]`);
+        if(el && el.value) baseDone++;
+      });
+      let radioDone = 0;
+      for(let i=0;i<LIKERT_ITEMS.length;i++){
+        if(form.querySelector(`input[name="likert_${i}"]:checked`)) radioDone++;
+      }
+      const total = baseRequired + LIKERT_ITEMS.length;
+      const pct = Math.round((baseDone + radioDone) / total * 100);
+      document.getElementById("progressFill").style.width = pct + "%";
+    }
+
+    function getFormData(){
+      const form = document.getElementById("surveyForm");
+      const fd = new FormData(form);
+      const likert = [];
+      for(let i=0;i<LIKERT_ITEMS.length;i++){
+        likert.push(parseInt(fd.get(`likert_${i}`), 10));
+      }
+      return {
+        meta: {
+          ts: new Date().toISOString(),
+          ua: navigator.userAgent
+        },
+        basic: {
+          gender: fd.get("gender"),
+          age_group: fd.get("age_group"),
+          education: fd.get("education"),
+          profession: fd.get("profession"),
+          invest_exp: fd.get("invest_exp"),
+          used_robo: fd.get("used_robo")
+        },
+        likert: {
+          scale: "1=非常不同意, 5=非常同意",
+          items: LIKERT_ITEMS,
+          values: likert
+        },
+        open: {
+          attract: (fd.get("open_attract")||"").toString().trim(),
+          privacy: (fd.get("open_privacy")||"").toString().trim(),
+          pay: (fd.get("open_pay")||"").toString().trim()
+        },
+        contact: {
+          email: (fd.get("contact_email")||"").toString().trim(),
+          phone: (fd.get("contact_phone")||"").toString().trim()
+        }
+      };
+    }
+
+    function saveResponse(payload){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      const id = "R" + Math.random().toString(36).slice(2, 10).toUpperCase();
+      payload.meta.response_id = id;
+      arr.push(payload);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+      return id;
+    }
+
+    function submitSurvey(){
+      try{
+        const payload = getFormData();
+        if(!payload.basic.gender || payload.likert.values.some(v => !Number.isFinite(v))){
+          alert("请完成所有必填项后再提交。");
+          return;
+        }
+        const id = saveResponse(payload);
+        document.getElementById("doneText").textContent = `已收到您的答卷（编号：${id}）。感谢支持！`;
+        openModal();
+        document.getElementById("surveyForm").reset();
+        computeProgress();
+      }catch(e){
+        alert("提交失败：" + (e.message || e));
+      }
+    }
+
+    function openModal(){ document.getElementById("doneModal").style.display = "flex"; }
+    function closeModal(){ document.getElementById("doneModal").style.display = "none"; }
+    function goBack(){ window.location.href = "result.html"; }
+
+    document.addEventListener("change", computeProgress);
+    document.addEventListener("input", computeProgress);
+    renderLikert();
+    computeProgress();
+  </script>
+</body>
+</html>

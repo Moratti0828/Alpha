@@ -1,0 +1,4 @@
+user_id,risk_pred,risk_prob
+1,1,0.72
+2,0,0.31
+3,1,0.64

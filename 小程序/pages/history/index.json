@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "投资足迹",
+  "usingComponents": {
+    "t-tag": "tdesign-miniprogram/tag/tag"
+  }
+}

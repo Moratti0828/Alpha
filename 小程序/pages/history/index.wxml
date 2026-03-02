@@ -1,0 +1,36 @@
+<view class="container">
+  <view class="header-bar">
+    <view class="title">投资足迹</view>
+    <view class="clear-btn" bindtap="onClearAll" wx:if="{{historyList.length > 0}}">
+      <text class="icon">🗑️</text> 清空
+    </view>
+  </view>
+
+  <view class="history-list" wx:if="{{historyList.length > 0}}">
+    <view class="history-item card" wx:for="{{historyList}}" wx:key="_id" bindtap="onTapItem" data-symbol="{{item.symbol}}">
+      
+      <view class="row-top">
+        <view class="left">
+          <text class="symbol">{{item.symbol}}</text>
+          <text class="name">{{item.name}}</text>
+        </view>
+        <text class="price">¥{{item.price}}</text>
+      </view>
+
+      <view class="row-bottom">
+        <text class="time">{{item.timeStr}}</text>
+        <t-tag size="small" variant="light" theme="primary">AI 简评</t-tag>
+      </view>
+
+      <view class="advice-box">
+        <rich-text nodes="{{item.adviceHtml}}"></rich-text>
+      </view>
+
+    </view>
+  </view>
+  
+  <view wx:else class="empty-tip">
+    <image src="../../images/tab_terminal.png" mode="widthFix" class="empty-icon"></image>
+    <text>暂无足迹，快去终端分析一只股票吧</text>
+  </view>
+</view>

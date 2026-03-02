@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>智能投顾建议（Qwen · SiliconFlow）</title>
+<style>
+  body {
+    font-family: "Microsoft YaHei","SimHei", Arial, sans-serif;
+    background: #f0f2f5;
+    padding: 20px;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  .card {
+    background: #fff;
+    padding: 16px 18px;
+    margin: 14px 0;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .card-head {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom: 6px;
+  }
+  .title { font-size: 18px; font-weight: 700; }
+  .badge {
+    color:#fff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+  }
+  .meta { color:#555; margin: 3px 0; }
+  .section { margin-top: 12px; }
+  .section-title { font-weight: 700; margin-bottom: 6px; }
+  .plan-item { padding: 8px 10px; background: #fafafa; border-left: 4px solid #2E86AB; margin: 8px 0; }
+  .plan-title { font-weight: 700; margin-bottom: 4px; }
+  .disclaimer { color:#666; font-size: 13px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>智能投顾建议（Qwen · SiliconFlow）</h1>
+    <p>共生成 3 位用户的建议。</p>
+    
+    <div class="card">
+      <div class="card-head">
+        <div class="title">用户 1</div>
+        <span class="badge" style="background:#e74c3c">进取型</span>
+      </div>
+
+      <div class="meta">30岁｜本科｜经验3年</div>
+      <div class="meta">年收入30万｜资产200万｜负债50万｜子女0</div>
+      <div class="meta"><b>推荐配置：</b>股票: 40.0%, 债券: 20.0%, 基金: 15.0%, REITs: 10.0%, 商品: 10.0%, 现金: 5.0%</div>
+
+      <div class="section">
+        <div class="section-title">一句话总结</div>
+        <div>30岁，收入稳定，资产充足，风险偏好较高，建议配置较高比例权益类资产以追求长期增长。</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">关键建议要点</div>
+        <ul><li>当前风险预测概率为0.72，提示为进取型，建议匹配较高风险收益策略。</li><li>资产配置建议中股票占比40%，基金15%，整体权益类比例较高，符合进取型特征。</li><li>建议优先配置指数基金或ETF分散投资，降低个股风险，提高长期收益潜力。</li><li>需关注市场波动，定期审视组合，根据市场变化和个人情况动态调整。</li></ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title">行动计划</div>
+        <div class='plan-item'><div class='plan-title'>资金安排</div><div>建议将可用资金按配置比例投入，优先考虑流动性较好的资产，如货币基金或短期理财作为现金储备。</div></div><div class='plan-item'><div class='plan-title'>组合执行</div><div>可选择主流宽基指数基金（如沪深300、中证500）作为股票配置主体，搭配债券基金、REITs及商品类ETF实现资产多元化。</div></div><div class='plan-item'><div class='plan-title'>风险控制</div><div>定期（如每季度）审视组合表现，设定止损或止盈机制，避免情绪化操作，保持长期定投纪律。</div></div>
+      </div>
+
+      <div class="section disclaimer">
+        <div class="section-title">免责声明</div>
+        <div>本建议基于用户画像及模型预测生成，不构成具体投资操作指导。市场有风险，投资需谨慎。过往业绩不代表未来表现，不承诺收益或本金安全。请根据个人风险承受能力独立决策。</div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-head">
+        <div class="title">用户 2</div>
+        <span class="badge" style="background:#2ecc71">保守型</span>
+      </div>
+
+      <div class="meta">56岁｜大专｜经验10年</div>
+      <div class="meta">年收入15万｜资产80万｜负债40万｜子女2</div>
+      <div class="meta"><b>推荐配置：</b>股票: 25.0%, 债券: 35.0%, 基金: 15.0%, REITs: 5.0%, 商品: 10.0%, 现金: 10.0%</div>
+
+      <div class="section">
+        <div class="section-title">一句话总结</div>
+        <div>建议以稳健保值为主，适度配置收益型资产，兼顾子女教育与退休规划，控制风险敞口。</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">关键建议要点</div>
+        <ul><li>当前风险偏好较低，适合保守型配置，强调资产安全与流动性。</li><li>建议将资金分散于债券、现金及低波动基金，降低市场波动影响。</li><li>股票与商品配置比例较低，适合中长期稳健增值需求。</li><li>需关注债务情况，优先优化负债结构，提升净资产水平。</li></ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title">行动计划</div>
+        <div class='plan-item'><div class='plan-title'>资金安排</div><div>建议将现有80万资产按推荐比例配置，优先保障家庭流动性和债务偿还能力，避免过度杠杆。</div></div><div class='plan-item'><div class='plan-title'>组合执行</div><div>可选择国债、高评级企业债、货币基金、债券型基金等低风险工具，股票部分可配置宽基指数ETF或稳健型混合基金。</div></div><div class='plan-item'><div class='plan-title'>风险控制</div><div>定期审视组合表现，避免集中投资，保持现金储备应对突发开支，防范市场波动风险。</div></div>
+      </div>
+
+      <div class="section disclaimer">
+        <div class="section-title">免责声明</div>
+        <div>本建议基于用户提供的信息及模型预测生成，不构成具体投资操作指引，不承诺收益或保本。市场有风险，投资需谨慎。实际投资决策应结合个人财务状况、风险承受能力，并咨询专业理财顾问。</div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-head">
+        <div class="title">用户 3</div>
+        <span class="badge" style="background:#e74c3c">进取型</span>
+      </div>
+
+      <div class="meta">28岁｜硕士及以上｜经验1年</div>
+      <div class="meta">年收入22万｜资产120万｜负债20万｜子女0</div>
+      <div class="meta"><b>推荐配置：</b>股票: 45.0%, 债券: 15.0%, 基金: 20.0%, REITs: 5.0%, 商品: 10.0%, 现金: 5.0%</div>
+
+      <div class="section">
+        <div class="section-title">一句话总结</div>
+        <div>年轻高学历、收入稳定、风险承受力强，建议以长期成长性资产为主，适度配置高波动资产提升收益潜力。</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">关键建议要点</div>
+        <ul><li>年龄28岁，职业初期，有充足时间承受短期波动，适合进取型配置。</li><li>资产120万，负债20万，净资产充足，可稳健加仓权益类资产。</li><li>建议股票占比45%，基金20%，REITs与商品合计15%，平衡成长与分散风险。</li><li>现金5%用于应急，债券15%提供稳定性，整体组合兼顾收益与流动性。</li></ul>
+      </div>
+
+      <div class="section">
+        <div class="section-title">行动计划</div>
+        <div class='plan-item'><div class='plan-title'>资金安排</div><div>建议将可用资金优先配置于长期成长类资产，如股票型基金、宽基指数ETF或优质股票，同时保留5%现金以应对突发资金需求。</div></div><div class='plan-item'><div class='plan-title'>组合执行</div><div>按45%股票、20%基金、15%债券、5%REITs、10%商品、5%现金的建议比例构建组合，可选择低费率指数基金或ETF实现分散化投资。</div></div><div class='plan-item'><div class='plan-title'>风险控制</div><div>定期（如每季度）审视组合表现，根据市场变化和自身情况动态调整。避免集中投资单一行业或个股，始终保留一定流动性以应对不确定性。</div></div>
+      </div>
+
+      <div class="section disclaimer">
+        <div class="section-title">免责声明</div>
+        <div>本建议基于用户画像和模型预测生成，不构成投资建议或承诺收益。市场有风险，投资需谨慎。具体投资决策应结合个人财务状况、风险偏好及专业咨询。</div>
+      </div>
+    </div>
+    
+  </div>
+</body>
+</html>

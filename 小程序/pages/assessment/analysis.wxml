@@ -1,0 +1,18 @@
+<view class="container">
+  <view class="center-content">
+    <view class="avatar-ring">
+      <image class="avatar" src="/images/default_avatar.png"></image>
+    </view>
+    <view class="main-text">正在了解你的风险测评与持仓</view>
+  </view>
+
+  <view class="scan-circle c1"></view>
+  <view class="scan-circle c2"></view>
+
+  <view class="float-tag t1">
+    <view class="icon">👤</view> 风险测评
+  </view>
+  <view class="float-tag t2">
+    <view class="icon">📈</view> 理财资产
+  </view>
+</view>

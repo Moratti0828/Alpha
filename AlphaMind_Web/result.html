@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>AlphaMind 评测结果</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{--brand:#8B0012;--accent:#FFA726;--bg:#FFF8F2;--text:#2C1A12;--border:#E7D9CD;--muted:rgba(44,26,18,.72);--shadow:0 10px 30px rgba(0,0,0,.06);--radius:18px;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Microsoft YaHei",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;background:radial-gradient(1200px 600px at 20% -10%, rgba(255,167,38,.18), transparent 60%),radial-gradient(900px 500px at 90% 0%, rgba(139,0,18,.12), transparent 55%),var(--bg);color:var(--text);}
+    .page{max-width:1080px;margin:0 auto;padding:26px 16px 44px}
+    .topbar{display:flex;align-items:center;gap:14px;padding:14px;border:1px solid var(--border);border-radius:var(--radius);background:rgba(255,255,255,.7);box-shadow:var(--shadow);backdrop-filter:blur(10px);}
+    .logo{width:52px;height:52px}
+    .brand{flex:1;min-width:0}
+    .brand h1{margin:0;font-size:20px;color:var(--brand)}
+    .brand p{margin:4px 0 0;font-size:12px;color:var(--muted)}
+    .pill{font-size:11px;font-weight:950;padding:6px 10px;border-radius:999px;background:rgba(255,167,38,.20);border:1px solid rgba(255,167,38,.35)}
+    .grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px}
+    .card{background:rgba(255,255,255,.88);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;}
+    .headline{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+    .risk{display:inline-flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:16px;background:rgba(139,0,18,.06);border:1px solid rgba(139,0,18,.14);min-width:240px}
+    .k{font-size:11px;color:var(--muted)}
+    .v{font-size:18px;font-weight:950;color:var(--brand);letter-spacing:.2px}
+    .desc{font-size:13px;color:var(--text);line-height:1.65;max-width:760px}
+    .score{display:inline-flex;align-items:center;gap:8px;font-weight:950;color:var(--brand);padding:6px 10px;border-radius:999px;background:rgba(255,167,38,.22);border:1px solid rgba(255,167,38,.35)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .btn{border:none;border-radius:999px;padding:10px 14px;cursor:pointer;font-weight:950;font-size:13px;display:inline-flex;align-items:center;gap:8px;}
+    .btn-primary{background:var(--brand);color:#fff}
+    .btn-primary:hover{background:var(--accent);color:#23140e}
+    .btn-ghost{background:transparent;border:1px dashed var(--border);color:var(--text)}
+    .three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+    @media(max-width:980px){.three{grid-template-columns:1fr}}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media(max-width:980px){.two{grid-template-columns:1fr}}
+    #radarUser,#radarCompare,#priceChart{width:100%;height:320px;border-radius:16px;background:#fff;border:1px solid var(--border)}
+    .suggest-item{display:flex;justify-content:space-between;gap:10px;padding:12px;border-radius:16px;background:rgba(255,248,242,.85);border:1px solid rgba(139,0,18,.10);margin-bottom:10px;align-items:center;}
+    .suggest-item .name{font-weight:950}
+    .suggest-item .desc{font-size:12px;color:var(--muted);margin-top:4px}
+    .suggest-item .pct{font-weight:950;color:var(--brand);white-space:nowrap}
+    .role-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:8px}
+    .role-card{padding:12px;border-radius:16px;background:rgba(255,248,242,.85);border:1px solid rgba(139,0,18,.10)}
+    .role-card .title{font-weight:950;color:var(--brand);margin-bottom:6px}
+    .role-card .text{font-size:13px;line-height:1.65;color:var(--text);white-space:pre-wrap}
+    details{margin-top:12px;border:1px dashed var(--border);border-radius:14px;background:rgba(255,255,255,.55);padding:10px 12px;}
+    details summary{cursor:pointer;font-weight:950;color:var(--brand);list-style:none;}
+    details summary::-webkit-details-marker{display:none}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace;font-size:11px;background:#f7f2ec;border:1px solid var(--border);border-radius:14px;padding:10px;white-space:pre-wrap;max-height:260px;overflow:auto;color:#1f120d;}
+    .empty{padding:18px;border-radius:16px;background:rgba(255,255,255,.88);border:1px solid var(--border);box-shadow:var(--shadow);color:var(--muted);line-height:1.7;}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <img class="logo" src="alphamind_logo.png" alt="AlphaMind Logo" />
+      <div class="brand">
+        <h1>AlphaMind 评测结果</h1>
+        <p>直接与他人分享（报告版）。</p>
+      </div>
+      <span class="pill" id="tsPill">-</span>
+    </header>
+
+    <main class="grid">
+      <div class="empty" id="emptyState" style="display:none;">
+        没有找到评测结果。请先在问卷页完成评测后再打开结果页。
+        <div class="actions" style="margin-top:12px;">
+          <button class="btn btn-primary" onclick="goBack()">返回问卷页</button>
+        </div>
+      </div>
+
+      <section class="card" id="resultCard" style="display:none;">
+        <div class="headline">
+          <div class="risk">
+            <div class="k">风险类型</div>
+            <div class="v" id="riskType">-</div>
+            <div class="k">风险分数</div>
+            <div class="score"><span id="riskScore">-</span> / 100</div>
+            <div class="k" style="margin-top:6px;">用户评分（user_score）</div>
+            <div class="v" style="font-size:14px;" id="userScore">-</div>
+          </div>
+          <div class="desc">
+            <div class="k">简评</div>
+            <div id="riskDesc" style="margin-top:6px;">-</div>
+            <div class="actions">
+              <button class="btn btn-primary" onclick="copySummary()">复制结论</button>
+              <button class="btn btn-ghost" onclick="downloadJSON()">导出 JSON</button>
+              <button class="btn btn-ghost" onclick="goBack()">重新评测</button>
+              <button class="btn btn-ghost" onclick="goSurvey()">参与使用后问卷</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card two" id="detailCard" style="display:none;">
+        <div>
+          <div class="k" style="font-weight:950;color:var(--brand);margin-bottom:8px;">画像雷达</div>
+          <div id="radarUser"></div>
+        </div>
+        <div>
+          <div class="k" style="font-weight:950;color:var(--brand);margin-bottom:8px;">资产建议</div>
+          <div id="suggestions"></div>
+        </div>
+      </section>
+
+      <section class="card three" id="chartsCard" style="display:none;">
+        <div>
+          <div class="k" style="font-weight:950;color:var(--brand);margin-bottom:8px;">产品能力对比</div>
+          <div id="radarCompare"></div>
+        </div>
+        <div>
+          <div class="k" style="font-weight:950;color:var(--brand);margin-bottom:8px;">近 7 日走势（示例）</div>
+          <div id="priceChart"></div>
+        </div>
+        <div>
+          <div class="k" style="font-weight:950;color:var(--brand);margin-bottom:8px;">市场观点（多角色）</div>
+          <div class="role-grid" id="roles"></div>
+        </div>
+      </section>
+
+      <details id="debugBox" style="display:none;">
+        <summary>高级（仅调试用）：查看原始返回与提示词</summary>
+        <div class="k" style="margin-top:10px;">提示词（q_text）</div>
+        <pre class="mono" id="promptBox">-</pre>
+        <div class="k" style="margin-top:10px;">后端原始返回</div>
+        <pre class="mono" id="rawBox">-</pre>
+      </details>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <script>
+    function goBack(){ window.location.href="assessment.html"; }
+    function goSurvey(){ window.location.href="survey.html"; }
+
+    function renderSuggestions(items){
+      const box=document.getElementById("suggestions"); box.innerHTML="";
+      if(!Array.isArray(items)||items.length===0){ box.innerHTML='<div class="k">暂无建议</div>'; return; }
+      items.forEach(it=>{
+        const div=document.createElement("div");
+        div.className="suggest-item";
+        div.innerHTML=`<div><div class="name">${escapeHtml(it.name||"-")}</div><div class="desc">${escapeHtml(it.desc||"")}</div></div><div class="pct">${escapeHtml(it.percent||"")}</div>`;
+        box.appendChild(div);
+      });
+    }
+
+    let radarUser=null, radarCompare=null, priceChart=null;
+    function renderUserRadar(values){
+      const el=document.getElementById("radarUser");
+      if(!radarUser) radarUser=echarts.init(el);
+      const v=(Array.isArray(values)&&values.length===5)?values:[0,0,0,0,0];
+      radarUser.setOption({
+        tooltip:{},
+        radar:{indicator:[
+          {name:"收益目标",max:100},{name:"投资经验",max:100},{name:"资金实力",max:100},{name:"投资时长",max:100},{name:"风险承受",max:100}
+        ],splitNumber:4,axisName:{color:"#2C1A12"}},
+        series:[{type:"radar",data:[{value:v,name:"用户画像"}]}]
+      });
+    }
+
+    function renderCompareRadar(comp){
+      const el=document.getElementById("radarCompare");
+      if(!radarCompare) radarCompare=echarts.init(el);
+      if(!comp || !Array.isArray(comp.indicators) || !Array.isArray(comp.series)){
+        radarCompare.setOption({title:{text:"暂无对比数据"}});
+        return;
+      }
+      radarCompare.setOption({
+        tooltip:{},
+        legend:{bottom:0},
+        radar:{
+          indicator: comp.indicators.map(x=>({name:x.name,max:x.max||10})),
+          splitNumber:4,
+          axisName:{color:"#2C1A12"}
+        },
+        series:[{type:"radar",data: comp.series.map(s=>({name:s.name,value:s.value}))}]
+      });
+    }
+
+    function renderPriceChart(chart){
+      const el=document.getElementById("priceChart");
+      if(!priceChart) priceChart=echarts.init(el);
+      if(!chart || !Array.isArray(chart.dates) || !Array.isArray(chart.prices)){
+        priceChart.setOption({title:{text:"暂无走势数据"}});
+        return;
+      }
+      priceChart.setOption({
+        tooltip:{trigger:"axis"},
+        xAxis:{type:"category",data:chart.dates},
+        yAxis:{type:"value"},
+        series:[{type:"line",data:chart.prices,smooth:true}]
+      });
+    }
+
+    function parseRoleSections(adviceText){
+      const text = (adviceText || "").toString();
+      const order = [
+        {key:"基本面分析师", icon:"🕵️‍♂️"},
+        {key:"技术交易员", icon:"📈"},
+        {key:"首席风控官", icon:"🛡️"},
+        {key:"核心辩论", icon:"⚔️"},
+        {key:"最终决策书", icon:"📝"},
+      ];
+
+      function findStart(title){
+        const a = `### ${title.icon} ${title.key}`;
+        const b = `### ${title.key}`;
+        let idx = text.indexOf(a);
+        if(idx === -1) idx = text.indexOf(b);
+        return idx;
+      }
+
+      const sections = [];
+      for(let i=0;i<order.length;i++){
+        const cur = order[i];
+        const start = findStart(cur);
+        if(start === -1) continue;
+
+        // find next section start
+        let end = text.length;
+        for(let j=i+1;j<order.length;j++){
+          const nxt = findStart(order[j]);
+          if(nxt !== -1 && nxt > start){ end = Math.min(end, nxt); }
+        }
+        const block = text.substring(start, end).trim();
+        const lines = block.split("\n");
+        // drop heading line
+        const body = lines.slice(1).join("\n").trim();
+        sections.push({title: `${cur.icon} ${cur.key}`, text: body || block});
+      }
+      return sections;
+    }
+
+    function renderRoles(sections){
+      const box=document.getElementById("roles");
+      box.innerHTML="";
+      if(!sections || sections.length===0){
+        box.innerHTML = '<div class="role-card"><div class="title">暂无观点</div><div class="text">本次返回未包含市场观点段落。</div></div>';
+        return;
+      }
+      sections.forEach(s=>{
+        const div=document.createElement("div");
+        div.className="role-card";
+        div.innerHTML = `<div class="title">${escapeHtml(s.title)}</div><div class="text">${escapeHtml(s.text)}</div>`;
+        box.appendChild(div);
+      });
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    function copySummary(){
+      const type=document.getElementById("riskType").textContent.trim();
+      const score=document.getElementById("riskScore").textContent.trim();
+      const desc=document.getElementById("riskDesc").textContent.trim();
+      const text=`AlphaMind 评测结果\n风险类型：${type}\n风险分数：${score}/100\n简评：${desc}`;
+      navigator.clipboard?.writeText(text).then(()=>alert("已复制到剪贴板")).catch(()=>alert("复制失败，请手动复制"));
+    }
+
+    function downloadJSON(){
+      const payload=localStorage.getItem("alphamind_assessment_latest")||"{}";
+      const blob=new Blob([payload],{type:"application/json;charset=utf-8"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a"); a.href=url; a.download="alphamind_assessment_result.json";
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+
+    (function init(){
+      const raw=localStorage.getItem("alphamind_assessment_latest");
+      const empty=document.getElementById("emptyState");
+      const resultCard=document.getElementById("resultCard");
+      const detailCard=document.getElementById("detailCard");
+      const chartsCard=document.getElementById("chartsCard");
+      const debugBox=document.getElementById("debugBox");
+      if(!raw){ empty.style.display="block"; return; }
+
+      let payload=null;
+      try{ payload=JSON.parse(raw); }catch(e){ empty.style.display="block"; return; }
+
+      const ts=payload.meta?.ts?new Date(payload.meta.ts):null;
+      document.getElementById("tsPill").textContent = ts ? ts.toLocaleString() : "结果页";
+
+      const rawResp = payload.raw || {};
+      const adviceText = rawResp?.data?.advice || "";
+
+      // Parse JSON from advice: take the first {...} block
+      let resultObj = payload.result;
+      if(!resultObj){
+        const t = adviceText.toString();
+        const fo = t.indexOf("{");
+        const lc = t.lastIndexOf("}");
+        if(fo !== -1 && lc !== -1 && lc > fo){
+          try{ resultObj = JSON.parse(t.substring(fo, lc+1)); }catch(e){ resultObj = null; }
+        }
+      }
+      if(!resultObj){ empty.style.display="block"; return; }
+
+      document.getElementById("riskType").textContent = resultObj.risk_type || "-";
+      document.getElementById("riskScore").textContent = (resultObj.score ?? "-").toString();
+      document.getElementById("riskDesc").textContent = resultObj.description || "-";
+      document.getElementById("userScore").textContent = (rawResp?.data?.user_score ?? "-").toString();
+
+      renderUserRadar(resultObj.radar_values);
+      renderSuggestions(resultObj.suggestions);
+
+      renderCompareRadar(rawResp?.data?.comparison);
+      renderPriceChart(rawResp?.data?.chart);
+      renderRoles(parseRoleSections(adviceText));
+
+      document.getElementById("promptBox").textContent = payload.prompt || "-";
+      document.getElementById("rawBox").textContent = JSON.stringify(rawResp || {}, null, 2);
+
+      resultCard.style.display="block";
+      detailCard.style.display="grid";
+      chartsCard.style.display="grid";
+      debugBox.style.display="block";
+
+      window.addEventListener("resize", ()=>{
+        radarUser && radarUser.resize();
+        radarCompare && radarCompare.resize();
+        priceChart && priceChart.resize();
+      });
+    })();
+  </script>
+</body>
+</html>

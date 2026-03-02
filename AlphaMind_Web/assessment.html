@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>AlphaMind 投资人格评测</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{--brand:#8B0012;--accent:#FFA726;--bg:#FFF8F2;--text:#2C1A12;--border:#E7D9CD;--muted:rgba(44,26,18,.72);--shadow:0 10px 30px rgba(0,0,0,.06);--radius:18px;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Microsoft YaHei",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;background:radial-gradient(1200px 600px at 20% -10%, rgba(255,167,38,.18), transparent 60%),radial-gradient(900px 500px at 90% 0%, rgba(139,0,18,.12), transparent 55%),var(--bg);color:var(--text);}
+    .page{max-width:1100px;margin:0 auto;padding:26px 16px 44px}
+    .topbar{display:flex;align-items:center;gap:14px;padding:14px;border:1px solid var(--border);border-radius:var(--radius);background:rgba(255,255,255,.7);box-shadow:var(--shadow);backdrop-filter:blur(10px);}
+    .logo{width:52px;height:52px;flex:0 0 auto}
+    .brand{min-width:0;flex:1}
+    .brand h1{margin:0;font-size:20px;letter-spacing:.2px;color:var(--brand)}
+    .brand p{margin:4px 0 0;font-size:12px;color:var(--muted)}
+    .pill{font-size:11px;font-weight:900;padding:6px 10px;border-radius:999px;background:rgba(139,0,18,.08);color:var(--brand);border:1px solid rgba(139,0,18,.18)}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-top:16px}
+    @media(max-width:920px){.grid{grid-template-columns:1fr}}
+    .card{background:rgba(255,255,255,.88);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;}
+    .card h2{margin:0 0 6px;font-size:14px;color:var(--brand)}
+    .card small{color:var(--muted);font-size:12px}
+    .section-title{margin:14px 0 8px;font-size:13px;font-weight:950;color:var(--brand)}
+    .row{display:grid;grid-template-columns:1.2fr 1.8fr;gap:10px;align-items:center;margin:10px 0;}
+    @media(max-width:520px){.row{grid-template-columns:1fr}}
+    label{font-size:13px}
+    select,input[type="text"]{width:100%;padding:10px 12px;border-radius:14px;border:1px solid #d9cabc;background:#fff;outline:none;font-size:13px;transition:box-shadow .15s,border-color .15s,transform .05s;}
+    select:focus,input[type="text"]:focus{border-color:rgba(255,167,38,.85);box-shadow:0 0 0 3px rgba(255,167,38,.22);}
+    .hint{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.45}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
+    .btn{border:none;border-radius:999px;padding:10px 16px;cursor:pointer;font-weight:950;font-size:13px;display:inline-flex;align-items:center;gap:8px;transition:transform .05s,background .15s;user-select:none;}
+    .btn:active{transform:translateY(1px)}
+    .btn-primary{background:var(--brand);color:#fff}
+    .btn-primary:hover{background:var(--accent);color:#23140e}
+    .btn-ghost{background:transparent;border:1px dashed var(--border);color:var(--text)}
+    .status{font-size:12px;color:var(--muted)}
+    .spinner{width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;display:none;animation:spin 1s linear infinite;}
+    .btn-primary.loading .spinner{display:inline-block}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .steps{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .step{flex:1 1 auto;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.6);padding:10px 12px;min-width:140px}
+    .step .k{font-size:11px;color:var(--muted)}
+    .step .v{margin-top:4px;font-size:13px;font-weight:950;color:var(--brand)}
+    .mini{margin-top:12px;padding:12px;border-radius:14px;background:rgba(255,248,242,.8);border:1px solid rgba(139,0,18,.12);}
+    details{margin-top:12px;border:1px dashed var(--border);border-radius:14px;background:rgba(255,255,255,.55);padding:10px 12px;}
+    details summary{cursor:pointer;font-weight:950;color:var(--brand);list-style:none;}
+    details summary::-webkit-details-marker{display:none}
+    .codebox{margin-top:10px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace;font-size:11px;background:#f7f2ec;border:1px solid var(--border);border-radius:12px;padding:10px;white-space:pre-wrap;max-height:220px;overflow:auto;color:#1f120d;}
+    .footer-note{margin-top:14px;font-size:11px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <img class="logo" src="alphamind_logo.png" alt="AlphaMind Logo" />
+      <div class="brand">
+        <h1>AlphaMind 投资人格评测</h1>
+        <p>填写问卷 → 一键分析 → 自动跳转结果页（简直不要太简单）</p>
+      </div>
+      <span class="pill">Web v1.2.0</span>
+    </header>
+
+    <main class="grid">
+      <section class="card">
+        <h2>📝 评测问卷</h2>
+        <small>选择最符合你当前情况的选项，系统将生成风险类型、雷达画像与资产建议。</small>
+
+        <div class="section-title">基础信息</div>
+        <div class="row">
+          <label for="userId">用户标识（可选）</label>
+          <div>
+            <input id="userId" type="text" value="guest" />
+            <div class="hint">用于后端日志追踪，不填写也可以。</div>
+          </div>
+        </div>
+
+        <div class="section-title">问卷问题</div>
+        <div id="questions"></div>
+
+        <div class="actions">
+          <button id="btnSubmit" type="button" class="btn btn-primary" onclick="submitToAI()">
+            <span class="spinner"></span>
+            ⚡ 开始分析并查看结果
+          </button>
+          <button type="button" class="btn btn-ghost" onclick="resetForm()">重置</button>
+          <span id="statusText" class="status">就绪</span>
+        </div>
+
+        <details>
+          <summary>高级（仅调试用）：查看生成的提示词</summary>
+          <div class="hint">默认收起，不影响收件人阅读。</div>
+          <pre id="promptPreview" class="codebox">（提交后生成）</pre>
+        </details>
+
+        <div class="footer-note">说明：页面已隐藏 API 配置，默认对接线上环境。</div>
+      </section>
+
+      <aside class="card">
+        <h2>📌 你将获得的内容</h2>
+        <small>提交后跳转到结果页，结果页可直接截图/转发。</small>
+
+        <div class="steps">
+          <div class="step"><div class="k">输出 1</div><div class="v">风险类型（四档）</div></div>
+          <div class="step"><div class="k">输出 2</div><div class="v">风险分数（0-100）</div></div>
+          <div class="step"><div class="k">输出 3</div><div class="v">雷达画像 + 配置建议</div></div>
+        </div>
+
+        <div class="mini"><div class="hint" style="margin:0">结果页新增：市场观点（多角色）/ 产品对比雷达图 / 近7日走势。</div></div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    const API_BASE = "http://111.230.52.99:8000"; // ✅ 写死，不提供页面编辑入口
+
+    const promptTemplate = `
+你是一位资深私人银行财富顾问。请根据用户的问卷回答，分析其投资人格。
+候选风格库：
+1. 【低风险稳健型】：适合国债、货币基金、储蓄型保险。关键词：保本、流动性。
+2. 【中等风险平衡型】：适合混合基金、高股息ETF、REITs。关键词：攻守兼备、抗通胀。
+3. 【高风险高回报型】：适合股票、外汇、期货。关键词：激进、高波动、超额收益。
+4. 【另类投资偏好】：适合黄金、原油、数字资产。关键词：对冲、非传统。
+
+用户画像数据：
+{{USER_DATA}}
+
+请严格按照以下 JSON 格式返回结果（不要包含 Markdown 符号，只返回 JSON）：
+{
+  "risk_type": "这里填入上面的四种风格之一",
+  "score": "0-100的风险承受分数",
+  "description": "一段30字左右的简评，像对朋友说话一样亲切，解释为什么他是这种风格。",
+  "radar_values": [收益目标(0-100), 投资经验(0-100), 资金实力(0-100), 投资时长(0-100), 风险承受(0-100)],
+  "suggestions": [
+    {"name": "核心资产", "desc": "例如：国债/沪深300ETF", "percent": "50%"},
+    {"name": "卫星资产", "desc": "例如：科技股/黄金", "percent": "30%"},
+    {"name": "现金管理", "desc": "例如：余额宝", "percent": "20%"}
+  ]
+}
+`.trim();
+
+    const questions = [
+      { field:"investment_experience", title:"投资经验有哪些？", options:[
+        {label:"无经验", value:"none"},{label:"仅存款国债", value:"deposit"},{label:"基金/股票/黄金", value:"stocks"}]},
+      { field:"job_status", title:"您的工作状态？", options:[
+        {label:"固定职业", value:"stable"},{label:"无固定职业", value:"freelance"},{label:"学生/退休", value:"retired"}]},
+      { field:"income_source", title:"收入主要来自？", options:[
+        {label:"工资薪金", value:"salary"},{label:"生产经营", value:"business"},{label:"其他", value:"other"}]},
+      { field:"annual_income", title:"家庭可支配年收入？", options:[
+        {label:"5万及以下", value:"low"},{label:"5-20万", value:"medium"},{label:"20-50万", value:"high"},{label:"50万以上", value:"ultra"}]},
+      { field:"invest_amount", title:"家庭收入有多少钱用于投资？", options:[
+        {label:"1万以下", value:"amt_low"},{label:"1-5万", value:"amt_mid"},{label:"5-20万", value:"amt_high"},{label:"20万以上", value:"amt_ultra"}]},
+      { field:"monthly_expense", title:"每月钱花哪了？", options:[
+        {label:"基本生活", value:"living"},{label:"还房贷/车贷", value:"loan"},{label:"还信用卡/消费贷", value:"credit"}]},
+      { field:"invest_duration", title:"可接受的最长投资期限？", options:[
+        {label:"1年以内", value:"short"},{label:"1-3年", value:"mid"},{label:"3年以上", value:"long"}]},
+      { field:"risk_tolerance", title:"能承受的最大损失？", options:[
+        {label:"1%以内", value:"risk_1"},{label:"5%以内", value:"risk_5"},{label:"10%以内", value:"risk_10"},{label:"20%以上", value:"risk_20"}]},
+      { field:"invest_goal", title:"投资目标是？", options:[
+        {label:"资产保值", value:"save"},{label:"稳健增值", value:"growth"},{label:"大幅增长", value:"aggressive"}]},
+    ];
+
+    function renderQuestions(){
+      const root=document.getElementById("questions");
+      root.innerHTML="";
+      questions.forEach((q, idx)=>{
+        const row=document.createElement("div"); row.className="row";
+        const label=document.createElement("label");
+        label.setAttribute("for", q.field);
+        label.innerHTML=`${idx+1}. ${q.title}`;
+        const wrap=document.createElement("div");
+        const sel=document.createElement("select"); sel.id=q.field; sel.name=q.field;
+        q.options.forEach(opt=>{ const o=document.createElement("option"); o.value=opt.value; o.textContent=opt.label; sel.appendChild(o); });
+        wrap.appendChild(sel);
+        const hint=document.createElement("div"); hint.className="hint"; hint.textContent="请选择最符合当前情况的一项。";
+        wrap.appendChild(hint);
+        row.appendChild(label); row.appendChild(wrap);
+        root.appendChild(row);
+      });
+    }
+    function getAnswers(){ const ans={}; questions.forEach(q=>{ ans[q.field]=document.getElementById(q.field).value; }); return ans; }
+    function translateAnswers(answers){
+      const lines=[];
+      questions.forEach(q=>{
+        const v=answers[q.field];
+        const opt=q.options.find(o=>o.value===v);
+        if(opt) lines.push(`${q.title}：${opt.label}`);
+      });
+      return lines.join("\n");
+    }
+    function buildFinalPrompt(){
+      const answers=getAnswers();
+      const userDesc=translateAnswers(answers);
+      return promptTemplate.replace("{{USER_DATA}}", userDesc);
+    }
+    function setLoading(isLoading, msg){
+      const btn=document.getElementById("btnSubmit");
+      const st=document.getElementById("statusText");
+      if(isLoading) btn.classList.add("loading"); else btn.classList.remove("loading");
+      btn.disabled=isLoading;
+      st.textContent=msg || (isLoading ? "请求中..." : "就绪");
+    }
+
+    async function submitToAI(){
+      const userId=(document.getElementById("userId").value.trim() || "guest");
+      const finalPrompt=buildFinalPrompt();
+      document.getElementById("promptPreview").textContent=finalPrompt;
+
+      setLoading(true, "分析中…");
+      try{
+        const resp = await fetch(`${API_BASE}/api/analyze`, {
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ user_id:userId, symbol:"PORTFOLIO", q_text: finalPrompt })
+        });
+        const json = await resp.json();
+
+        // 从 data.advice 里解析出 JSON 片段（允许 ```json ... ``` + 后续文本）
+        const rawText = (json?.data?.advice || "").toString();
+        let aiResult = null;
+        const fo = rawText.indexOf("{");
+        const lc = rawText.lastIndexOf("}");
+        if(fo !== -1 && lc !== -1 && lc > fo){
+          try{ aiResult = JSON.parse(rawText.substring(fo, lc+1)); }catch(e){ aiResult = null; }
+        }
+
+        const payload = { meta:{ apiBase: API_BASE, userId, ts: new Date().toISOString() }, answers:getAnswers(), prompt: finalPrompt, raw: json, result: aiResult };
+        localStorage.setItem("alphamind_assessment_latest", JSON.stringify(payload));
+        window.location.href="result.html";
+      }catch(e){
+        setLoading(false, "失败 ❌");
+        alert("请求失败：\n" + (e.message || e));
+      }
+    }
+
+    function resetForm(){
+      questions.forEach(q=>{ const sel=document.getElementById(q.field); if(sel) sel.selectedIndex=0; });
+      document.getElementById("userId").value="guest";
+      document.getElementById("statusText").textContent="就绪";
+      document.getElementById("promptPreview").textContent="（提交后生成）";
+    }
+
+    renderQuestions();
+  </script>
+</body>
+</html>

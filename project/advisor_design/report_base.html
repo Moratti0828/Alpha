@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AlphaMind | 智能投顾建议</title>
+  <style>
+    :root{
+      --bg: #fbf3ea;
+      --card: #ffffff;
+      --border: #eadfd3;
+      --text: #2b2b2b;
+      --muted: #6f6a63;
+      --primary: #a31818;
+      --shadow: 0 10px 30px rgba(25, 10, 10, .06);
+      --radius: 14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
+    }
+    *{ box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: var(--sans);
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 20% 0%, #fff8f1 0%, var(--bg) 60%, var(--bg) 100%);
+      padding: 24px;
+    }
+
+    .topbar{
+      max-width: 1100px;
+      margin: 0 auto 18px auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 14px 18px;
+      background: rgba(255,255,255,.65);
+      backdrop-filter: blur(6px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .brand-logo{
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      overflow:hidden;
+      box-shadow: 0 6px 14px rgba(163,24,24,.18);
+      flex: 0 0 auto;
+    }
+    .brand-logo img{
+      width:100%; height:100%; object-fit:cover; display:block;
+    }
+    .brand-title{ line-height: 1.1; min-width: 0; }
+    .brand-title .h1{
+      font-weight: 800;
+      font-size: 20px;
+      color: var(--primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .brand-title .sub{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .badge{
+      background: var(--primary);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 8px 18px rgba(163,24,24,.18);
+    }
+
+    .container{
+      max-width: 1100px;
+      margin: 0 auto;
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap: 18px;
+      align-items:start;
+    }
+    @media (max-width: 1000px){
+      .container{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card-hd{
+      padding: 14px 16px;
+      border-bottom: 1px solid #f0e7dc;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      background: linear-gradient(180deg, rgba(251,243,234,.55) 0%, rgba(255,255,255,.85) 100%);
+    }
+    .card-title{
+      font-weight: 800;
+      color: #3a2a2a;
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width:0;
+    }
+    .dot{
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 0 4px rgba(163,24,24,.10);
+      flex: 0 0 auto;
+    }
+    .card-bd{ padding: 14px 16px; }
+
+    /* 顶部摘要 */
+    .summary-grid{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 900px){
+      .summary-grid{ grid-template-columns: repeat(2, 1fr); }
+    }
+    .stat{
+      border: 1px solid #f0e7dc;
+      border-radius: 12px;
+      padding: 12px;
+      background: #fff;
+    }
+    .stat .k{ font-size: 12px; color: var(--muted); }
+    .stat .v{ font-size: 18px; font-weight: 900; margin-top: 4px; color: #2c1d1d; }
+
+    /* 用户建议列表容器 */
+    .user-grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      padding: 14px;
+    }
+
+    /* 右侧 JSON / 合规卡片复用样式 */
+    .codebox{
+      font-family: var(--mono);
+      font-size: 12px;
+      background: #101010;
+      color: #eaeaea;
+      border-radius: 12px;
+      padding: 12px;
+      overflow:auto;
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 10px 20px rgba(0,0,0,.08);
+      white-space: pre;
+    }
+    .pill{
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #f0e7dc;
+      background: #fff;
+      color: #5c4e4e;
+      white-space: nowrap;
+    }
+    .pill.red{ border-color: rgba(163,24,24,.25); color: var(--primary); background: rgba(163,24,24,.06); }
+    .pill.green{ border-color: rgba(39,174,96,.25); color: #1e8449; background: rgba(39,174,96,.08); }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--primary);
+      color:#fff;
+      font-weight: 800;
+      border: 1px solid rgba(0,0,0,.06);
+      text-decoration:none;
+      box-shadow: 0 10px 20px rgba(163,24,24,.18);
+    }
+    .btn.secondary{
+      background: #fff;
+      color: var(--primary);
+      border: 1px solid rgba(163,24,24,.22);
+      box-shadow: none;
+    }
+    .muted{ color: var(--muted); font-size: 12px; }
+  </style>
+</head>
+
+<body>
+  <!-- 顶部栏 -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-logo" aria-hidden="true">
+        <img src="logo_custom.png" alt="logo" />
+      </div>
+      <div class="brand-title">
+        <div class="h1">AlphaMind 智能投顾建议</div>
+        <div class="sub">画像 × 风险评估 × 资产配置 × 合规输出</div>
+      </div>
+    </div>
+    <div class="badge">Beta</div>
+  </div>
+
+  <div class="container">
+    <!-- 左侧：建议 -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title"><span class="dot"></span>建议总览</div>
+        <div class="muted">生成时间：{{GENERATED_AT}}</div>
+      </div>
+      <div class="card-bd">
+        <!-- 顶部摘要统计：可选 -->
+        <div class="summary-grid">
+          <div class="stat"><div class="k">用户数</div><div class="v">{{N_USERS}}</div></div>
+          <div class="stat"><div class="k">进取型</div><div class="v">{{N_AGGRESSIVE}}</div></div>
+          <div class="stat"><div class="k">稳健型</div><div class="v">{{N_BALANCED}}</div></div>
+          <div class="stat"><div class="k">保守型</div><div class="v">{{N_CONSERVATIVE}}</div></div>
+        </div>
+      </div>
+
+      <!-- 用户卡片列表（由 Python 填充） -->
+      <div class="user-grid">
+        {{CARDS_HTML}}
+      </div>
+    </div>
+
+    <!-- 右侧：请求数据预览 + 字段映射（示意） -->
+    <div>
+      <div class="card" style="margin-bottom: 18px;">
+        <div class="card-hd">
+          <div class="card-title"><span class="dot"></span>请求数据预览</div>
+          <span class="pill red">POST /advisor/generate</span>
+        </div>
+        <div class="card-bd">
+          <div class="muted" style="margin-bottom:10px;">
+            实际系统对接时，可直接 POST 下列 JSON 结构给后端，后端按模板渲染结构化建议。
+          </div>
+          <div class="codebox">{{SAMPLE_PAYLOAD_JSON}}</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 18px;">
+        <div class="card-hd">
+          <div class="card-title"><span class="dot"></span>字段与模型对应</div>
+        </div>
+        <div class="card-bd">
+          <div class="codebox" style="background:#fff7ef;color:#3b2f2f;border:1px solid #f0e7dc;box-shadow:none;white-space:pre-wrap;">
+age → profile.age (int)
+education → profile.education (str)
+income10k → profile.income10k (float)
+asset10k → profile.asset10k (float)
+debt10k → profile.debt10k (float)
+children → profile.children (int)
+exp_years → profile.exp_years (int)
+risk_prob → model_predictions.risk_prob (float)
+portfolio → portfolio_recommendation (str)
+rag_evidence → sources (list)
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd">
+          <div class="card-title"><span class="dot"></span>合规提示</div>
+          <span class="pill green">必读</span>
+        </div>
+        <div class="card-bd">
+          <ul>
+            <li>不承诺收益，不出现“保证盈利/稳赚”等表述。</li>
+            <li>不提供具体个股/买卖点；可给 ETF/指数基金/资产类别方向。</li>
+            <li>每条建议包含风险提示与免责声明。</li>
+            <li>sources 至少包含 1 条 compliance 类来源。</li>
+          </ul>
+          <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+            <a class="btn" href="#top">回到顶部</a>
+            <a class="btn secondary" href="javascript:window.print()">打印/导出 PDF</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <a id="top"></a>
+</body>
+</html>
+

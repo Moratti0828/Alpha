@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "date": "2025-12-14",
+  "fetched_at": "2025-12-14T17:59:40",
+  "provider": "tushare",
+  "risk_state": "unknown",
+  "indices": {
+    "metrics": [],
+    "series": []
+  },
+  "errors": [
+    {
+      "ts_code": "000001.SH",
+      "error": "抱歉，您没有接口访问权限，权限的具体详情访问：https://tushare.pro/document/1?doc_id=108。"
+    },
+    {
+      "ts_code": "399001.SZ",
+      "error": "抱歉，您没有接口访问权限，权限的具体详情访问：https://tushare.pro/document/1?doc_id=108。"
+    },
+    {
+      "ts_code": "399006.SZ",
+      "error": "抱歉，您没有接口访问权限，权限的具体详情访问：https://tushare.pro/document/1?doc_id=108。"
+    },
+    {
+      "ts_code": "000688.SH",
+      "error": "抱歉，您没有接口访问权限，权限的具体详情访问：https://tushare.pro/document/1?doc_id=108。"
+    },
+    {
+      "ts_code": "000300.SH",
+      "error": "抱歉，您没有接口访问权限，权限的具体详情访问：https://tushare.pro/document/1?doc_id=108。"
+    },
+    {
+      "ts_code": "000905.SH",
+      "error": "抱歉，您没有接口访问权限，权限的具体详情访问：https://tushare.pro/document/1?doc_id=108。"
+    },
+    {
+      "ts_code": "000852.SH",
+      "error": "抱歉，您没有接口访问权限，权限的具体详情访问：https://tushare.pro/document/1?doc_id=108。"
+    },
+    {
+      "ts_code": "000016.SH",
+      "error": "抱歉，您没有接口访问权限，权限的具体详情访问：https://tushare.pro/document/1?doc_id=108。"
+    },
+    {
+      "ts_code": "000922.CSI",
+      "error": "抱歉，您没有接口访问权限，权限的具体详情访问：https://tushare.pro/document/1?doc_id=108。"
+    }
+  ],
+  "notes": [
+    "本文件为国内公开数据的日更快照，仅供信息参考，不构成投资建议或收益承诺。",
+    "如部分指数代码无数据，请检查 TuShare 账号权限或调整 ts_code（如 000922.CSI vs 000922.SH）。"
+  ]
+}

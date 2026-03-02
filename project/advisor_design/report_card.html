@@ -1,0 +1,33 @@
+        <div class="user-card">
+          <div class="user-hd">
+            <div class="left">
+              <div class="user-id">用户 {{USER_ID}}</div>
+              <span class="pill {{RISK_PILL_CLASS}}">{{RISK_LEVEL}}</span>
+              <span class="pill">风险概率：{{RISK_PROB}}</span>
+            </div>
+            <a class="btn secondary" href="#user-{{USER_ID}}">定位</a>
+          </div>
+
+          <div class="user-bd" id="user-{{USER_ID}}">
+            <div class="kv">
+              <div class="k">一句话总结</div><div class="v">{{SUMMARY}}</div>
+              <div class="k">用户关注</div><div class="v">{{WATCHLIST}}</div>
+              <div class="k">免责声明</div><div class="v">{{DISCLAIMER}}</div>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">要点</div>
+              <ul>
+                {{BULLETS_HTML}}
+              </ul>
+            </div>
+
+            <div class="section">
+              <div class="sec-title">行动计划</div>
+              <div class="actions">
+                {{ACTION_PLAN_HTML}}
+              </div>
+            </div>
+          </div>
+        </div>
+

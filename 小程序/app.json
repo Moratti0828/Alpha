@@ -1,0 +1,45 @@
+{
+    "pages": [
+      "pages/welcome/index",
+      "pages/index/index",
+      "pages/user/index",
+      "pages/history/index",
+      "pages/assessment/index",
+      "pages/assessment/summary",
+      "pages/assessment/analysis",
+      "pages/assessment/result",
+      "pages/agent/chat"
+    ],
+    "window": {
+      "backgroundTextStyle": "light",
+      "navigationBarBackgroundColor": "#0A1E36",
+      "navigationBarTitleText": "AlphaMind",
+      "navigationBarTextStyle": "white"
+    },
+    "tabBar": {
+      "custom": false,
+      "color": "#637282",
+      "selectedColor": "#0052D4",
+      "backgroundColor": "#0A1E36",
+      "borderStyle": "black",
+      "list": [
+        {
+          "pagePath": "pages/index/index",
+          "text": "终端",
+          "iconPath": "images/tab_terminal.png",
+          "selectedIconPath": "images/tab_terminal_active.png"
+        },
+        {
+          "pagePath": "pages/user/index",
+          "text": "我的",
+          "iconPath": "images/tab_user.png",
+          "selectedIconPath": "images/tab_user_active.png"
+        }
+      ]
+    },
+    "useExtendedLib": {
+      "weui": true
+    },
+    "lazyCodeLoading": "requiredComponents",
+    "sitemapLocation": "sitemap.json"
+  }

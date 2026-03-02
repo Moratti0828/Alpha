@@ -1,0 +1,56 @@
+/* app.wxss - 支付宝/蚂蚁财富 清爽风格 */
+page {
+  /* 背景：浅灰白 */
+  background-color: #F5F5F5;
+  /* 文字：深灰黑 */
+  color: #333333;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+  
+  /* 蚂蚁蓝体系 */
+  --ant-blue: #1677FF; 
+  --ant-blue-light: #E6F4FF;
+  
+  /* 功能色 */
+  --color-up: #F54336;      /* 红涨 */
+  --color-down: #4CAF50;    /* 绿跌 */
+  --color-text-main: #333333;
+  --color-text-sub: #999999;
+  --color-card: #FFFFFF;
+  
+  /* 柔和阴影 */
+  --shadow-card: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+}
+
+.container {
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+/* 通用卡片样式 - 模仿支付宝卡片 */
+.card {
+  background: var(--color-card);
+  border-radius: 16rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: var(--shadow-card);
+}
+
+/* 按钮重置 */
+button::after { border: none; }
+
+/* 涨跌色类 */
+.up { color: var(--color-up); }
+.down { color: var(--color-down); }
+.bg-up { background-color: var(--color-up); color: #fff; }
+.bg-down { background-color: var(--color-down); color: #fff; }
+
+/* 蚂蚁蓝主题色类 */
+.bg-ant-blue { background-color: var(--ant-blue); }
+.text-ant-blue { color: var(--ant-blue); }
+.border-ant-blue { border-color: var(--ant-blue); }
+
+/* 通用动画 */
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(20rpx); opacity: 0; } to { transform: translateY(0); opacity: 1; } }

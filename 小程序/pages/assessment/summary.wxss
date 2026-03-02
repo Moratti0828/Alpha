@@ -1,0 +1,51 @@
+/* 页面背景灰白 */
+page { background-color: #F7F8FA; padding-bottom: 140rpx; /* ✅ 留出底部按钮空间 */ }
+
+.header-status {
+  background: #fff; padding: 50rpx 0; text-align: center; margin-bottom: 20rpx;
+}
+.circle-ring {
+  width: 140rpx; height: 140rpx; 
+  border: 8rpx solid #1677FF; /* 支付宝蓝 */
+  border-radius: 50%;
+  margin: 0 auto 24rpx; 
+  display: flex; align-items: center; justify-content: center;
+  color: #1677FF; font-weight: bold;
+}
+.percent { font-size: 48rpx; }
+.unit { font-size: 24rpx; }
+.status-title { font-size: 32rpx; color: #333; font-weight: bold; margin-bottom: 8rpx; }
+.status-desc { font-size: 24rpx; color: #999; }
+
+.info-list { background: #fff; padding: 0 30rpx; }
+.info-item {
+  padding: 30rpx 0; 
+  border-bottom: 1rpx solid #F0F0F0;
+}
+.info-item:last-child { border-bottom: none; }
+
+.item-header { display: flex; justify-content: space-between; margin-bottom: 12rpx; }
+.item-title { font-size: 28rpx; color: #1677FF; font-weight: bold; } /* 题目蓝色 */
+.btn-modify { font-size: 24rpx; color: #999; }
+
+/* ✅ 核心修复：确保答案文字是深黑色的 */
+.item-value { 
+  font-size: 30rpx; 
+  color: #333333; 
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* 底部固定按钮 */
+.footer-area {
+  position: fixed; bottom: 0; left: 0; width: 100%;
+  background: #fff; padding: 20rpx 30rpx;
+  box-shadow: 0 -4rpx 20rpx rgba(0,0,0,0.05);
+  box-sizing: border-box; /* 防止宽度溢出 */
+  z-index: 100;
+}
+.btn-submit {
+  background: #1677FF; color: #fff; text-align: center; padding: 26rpx;
+  border-radius: 12rpx; font-size: 32rpx; font-weight: bold;
+}
+.btn-submit:active { opacity: 0.9; }

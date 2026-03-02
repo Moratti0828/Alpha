@@ -1,0 +1,65 @@
+<view class="container">
+  <view class="header-progress">
+    <view class="progress-bg">
+      <view class="progress-bar" style="width: {{progress}}%"></view>
+    </view>
+    <view class="progress-text">
+      <text class="current">{{currentIndex + 1}}</text>
+      <text class="total">/ {{totalCount}}</text>
+    </view>
+  </view>
+
+  <swiper 
+    class="question-swiper" 
+    current="{{currentIndex}}" 
+    duration="300" 
+    touchable="{{false}}"
+  >
+    <block wx:for="{{questions}}" wx:key="field">
+      <swiper-item>
+        <view class="question-card">
+          <view class="q-title">{{item.title}}</view>
+          
+          <view class="options-list" wx:if="{{item.type === 'select'}}">
+            <view 
+              class="option-item {{answers[item.field] === option.value ? 'selected' : ''}}" 
+              wx:for="{{item.options}}" 
+              wx:for-item="option" 
+              wx:key="value" 
+              bindtap="onSelect" 
+              data-field="{{item.field}}" 
+              data-value="{{option.value}}"
+            >
+              <text class="opt-label">{{option.label}}</text>
+              <text class="opt-check" wx:if="{{answers[item.field] === option.value}}">✓</text>
+            </view>
+          </view>
+
+          <view class="input-box" wx:if="{{item.type === 'input'}}">
+            <textarea 
+              class="q-textarea" 
+              placeholder="{{item.placeholder}}" 
+              bindinput="onInput" 
+              value="{{inputText}}"
+            />
+            <button class="btn-next" bindtap="onSubmitInput">下一步</button>
+          </view>
+        </view>
+      </swiper-item>
+    </block>
+  </swiper>
+
+  <view class="footer-nav">
+  <view class="nav-btn prev {{currentIndex === 0 ? 'disabled' : ''}}" bindtap="prevQuestion">
+    <text>← 上一题</text>
+  </view>
+
+  <view 
+    class="nav-btn next" 
+    bindtap="manualNextQuestion" 
+    wx:if="{{answers[questions[currentIndex].field] && currentIndex < totalCount - 1}}"
+  >
+    <text>下一题 →</text>
+  </view>
+</view>
+</view>

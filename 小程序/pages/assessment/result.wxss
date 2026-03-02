@@ -1,0 +1,143 @@
+/* pages/assessment/result.wxss */
+page { 
+  background: #F5F7FA; /* 浅灰背景 */
+  padding-bottom: 60rpx; 
+}
+
+/* 1. 结果大卡片 */
+.result-card {
+  margin: 24rpx; 
+  padding: 40rpx; 
+  text-align: center;
+  border-radius: 20rpx; 
+  background: #fff; /* 纯白卡片背景 */
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.05); /* 柔和阴影 */
+}
+
+/* 用户信息 */
+.user-header { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; /* 居中 */
+  margin-bottom: 30rpx; 
+}
+.mini-avatar { 
+  width: 50rpx; 
+  height: 50rpx; 
+  border-radius: 50%; 
+  margin-right: 16rpx; 
+  background: #eee;
+}
+.user-name { 
+  font-weight: bold; 
+  color: #333; 
+  font-size: 30rpx; 
+}
+
+/* 结果标题 */
+.result-headline { 
+  font-size: 40rpx; 
+  font-weight: 900; 
+  color: #333; 
+  margin-bottom: 30rpx; 
+}
+
+/* 🔴 核心修复：给雷达图容器高度 */
+.radar-container { 
+  width: 100%; 
+  height: 500rpx; /* 必须给具体高度，否则不显示 */
+  margin: 20rpx 0 40rpx; 
+  position: relative;
+}
+
+/* 确保 ec-canvas 撑满容器 */
+ec-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* 结果描述文本 */
+.result-text { 
+  font-size: 26rpx; 
+  color: #666; 
+  line-height: 1.6; 
+  text-align: justify; 
+  margin-bottom: 40rpx; 
+  padding: 0 20rpx;
+}
+
+/* 按钮组 */
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.btn-retest {
+  width: 80%;
+  background: #1677FF; /* 支付宝蓝 */
+  color: #fff;
+  height: 88rpx; 
+  line-height: 88rpx; 
+  border-radius: 44rpx;
+  font-size: 32rpx; 
+  font-weight: 500; 
+  box-shadow: 0 8rpx 20rpx rgba(22, 119, 255, 0.2);
+}
+
+.btn-quit { 
+  font-size: 26rpx; 
+  color: #999; 
+  padding: 20rpx;
+}
+
+/* 2. 策略网格 */
+.strategy-header { padding: 30rpx 24rpx 10rpx; }
+.s-title { font-size: 36rpx; font-weight: bold; color: #1f3d60; margin-bottom: 8rpx; }
+.s-sub { font-size: 22rpx; color: #8fa0b5; }
+
+.strategy-grid {
+  display: flex; overflow-x: auto; padding: 20rpx 24rpx;
+  gap: 20rpx; /* 卡片间距 */
+}
+/* 隐藏滚动条 */
+::-webkit-scrollbar { width: 0; height: 0; color: transparent; }
+
+.st-card {
+  flex-shrink: 0; width: 260rpx; background: #fff;
+  border-radius: 16rpx; padding: 30rpx 24rpx;
+  display: flex; flex-direction: column; justify-content: space-between;
+  min-height: 420rpx; box-shadow: 0 4rpx 10rpx rgba(0,0,0,0.03);
+}
+
+.st-top .tag { font-size: 22rpx; color: #666; display: block; margin-bottom: 8rpx; }
+.st-name { font-weight: bold; font-size: 28rpx; color: #333; margin-bottom: 8rpx; }
+.st-desc { font-size: 20rpx; color: var(--ant-blue); font-weight: 500; }
+
+.st-mid { margin: 30rpx 0; }
+.rate-num { font-size: 36rpx; font-weight: bold; color: #333; margin-bottom: 4rpx; }
+.rate-txt { font-size: 20rpx; color: #999; }
+
+.st-bot { display: flex; flex-wrap: wrap; gap: 10rpx; }
+.feature-tag {
+  background: #F7F8FA; color: #999; font-size: 20rpx;
+  padding: 6rpx 12rpx; border-radius: 6rpx;
+}
+.feature-text { font-size: 20rpx; color: #999; width: 100%; }
+.feature-graph {
+  width: 100%; height: 60rpx; background: linear-gradient(to top right, #eef, #ccf);
+  border-radius: 8rpx; margin-bottom: 10rpx;
+}
+
+/* 3. 进阶卡片 */
+.advanced-card { margin: 24rpx; border: none; padding: 30rpx; }
+.adv-title { font-size: 28rpx; font-weight: bold; color: #A06432; margin-bottom: 8rpx; }
+.adv-sub { font-size: 22rpx; color: #C09870; margin-bottom: 30rpx; }
+
+.adv-row { display: flex; justify-content: space-between; }
+.adv-item { flex: 1; }
+.adv-name { font-size: 30rpx; font-weight: bold; margin-bottom: 8rpx; }
+.adv-desc { font-size: 22rpx; color: #E74C3C; background: #FFF0F0; display: inline-block; padding: 2rpx 8rpx; border-radius: 4rpx; }
+.adv-line { width: 1rpx; background: #eee; margin: 0 30rpx; }

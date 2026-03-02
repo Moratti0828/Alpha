@@ -1,0 +1,41 @@
+<view class="container">
+  <view class="header-card card">
+    <view class="symbol-row">
+      <text class="name">{{stockName}}</text>
+      <text class="code">{{symbol}}</text>
+    </view>
+    <view class="status-badge">
+      <view class="dot"></view> AlphaMind 多智能体博弈中
+    </view>
+  </view>
+
+  <view class="thinking-box" wx:if="{{isThinking}}">
+    <view class="think-step {{step >= 1 ? 'active' : ''}}">
+      <text class="icon">🔐</text> [安全层] 端到端加密通道建立...
+    </view>
+    <view class="think-step {{step >= 2 ? 'active' : ''}}">
+      <text class="icon">💾</text> [数据层] 检索 RAG 实时行情库...
+    </view>
+    <view class="think-step {{step >= 3 ? 'active' : ''}}">
+      <text class="icon">🧠</text> [模型层] 双塔风险因子匹配 (Score: 0.72)...
+    </view>
+    <view class="think-step {{step >= 4 ? 'active' : ''}}">
+      <text class="icon">⚔️</text> [决策层] 启动多智能体辩论...
+    </view>
+    <view class="loading-spinner"></view>
+  </view>
+
+  <view class="chat-content card" wx:if="{{!isThinking && result}}">
+    <rich-text nodes="{{result}}" class="markdown-text"></rich-text>
+  </view>
+
+  <view class="chart-box" wx:if="{{!isThinking && result}}">
+    <view class="chart-title">🏆 模型能力基准测试 (Benchmark)</view>
+    <view class="chart-container">
+      <ec-canvas id="mychart-radar" canvas-id="mychart-radar" ec="{{ ec }}"></ec-canvas>
+    </view>
+    <view class="chart-desc">AlphaMind 在 <text class="highlight">风险识别</text> 与 <text class="highlight">个性化</text> 维度显著领先竞品。</view>
+  </view>
+
+  <view style="height: 100rpx;"></view>
+</view>

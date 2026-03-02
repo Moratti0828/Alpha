@@ -1,0 +1,127 @@
+<view class="container">
+  <view class="search-box">
+    <t-search placeholder="输入代码 (如 600519 / AAPL)" bind:submit="onSearch" shape="round" />
+  </view>
+
+  <view class="thinking-box" wx:if="{{isThinking}}">
+    <view class="think-header">
+      <view class="spinner"></view>
+      <text class="think-title">AlphaMind 正在构建策略...</text>
+    </view>
+    
+    <view class="think-steps">
+      <view class="step-item {{thinkStep >= 1 ? 'active' : ''}}">
+        <text class="icon">🔐</text> [安全层] 端到端加密通道建立
+      </view>
+      <view class="step-item {{thinkStep >= 2 ? 'active' : ''}}">
+        <text class="icon">💾</text> [数据层] 检索 RAG 实时行情库
+      </view>
+      <view class="step-item {{thinkStep >= 3 ? 'active' : ''}}">
+        <text class="icon">🧠</text> [模型层] 双塔因子匹配 (Score: 0.82)
+      </view>
+      <view class="step-item {{thinkStep >= 4 ? 'active' : ''}}">
+        <text class="icon">⚔️</text> [决策层] 启动多智能体博弈...
+      </view>
+    </view>
+  </view>
+
+  <view class="dashboard" wx:if="{{!stockData && !isThinking}}">
+    <view class="welcome-card card">
+      <view class="welcome-text">
+        <text class="greeting">{{greeting}}</text>
+        <text class="sub-text">AlphaMind 已准备就绪</text>
+      </view>
+      <view class="status-icon">🧠</view>
+    </view>
+
+    <view class="section-header">热门标的</view>
+    <view class="hot-tags">
+      <view class="tag-card" wx:for="{{hotTags}}" wx:key="symbol" bindtap="onQuickSearch" data-symbol="{{item.symbol}}">
+        <view class="tag-top">
+          <text class="tag-name">{{item.name}}</text>
+          <text class="tag-icon">🔥</text>
+        </view>
+        <text class="tag-symbol">{{item.symbol}}</text>
+      </view>
+    </view>
+
+    <block wx:if="{{recentHistory.length > 0}}">
+      <view class="section-header">最近访问</view>
+      <view class="recent-list">
+        <view class="recent-item" wx:for="{{recentHistory}}" wx:key="unique" bindtap="onQuickSearch" data-symbol="{{item.symbol}}">
+          <view class="recent-left">
+            <text class="name">{{item.name}}</text>
+            <text class="symbol">{{item.symbol}}</text>
+          </view>
+          <view class="recent-right">
+            <text class="price">¥{{item.price}}</text>
+            <text class="arrow">></text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <block wx:else-if="{{!isThinking}}">
+    <view class="quick-actions">
+      <view class="action-btn" bindtap="goToHistory">
+        <text class="icon">🕒</text> <text>历史</text>
+      </view>
+      <view class="action-btn" bindtap="backToHome">
+        <text class="icon">🏠</text> <text>主页</text>
+      </view>
+    </view>
+
+    <view class="card info-card">
+      <view class="row-top">
+        <view class="stock-id">
+          <text class="symbol">{{stockData.symbol}}</text>
+          <text class="name">{{stockData.name}}</text>
+        </view>
+        <t-tag theme="{{isUp ? 'danger' : 'success'}}" variant="light">{{isUp ? '看涨' : '看跌'}}</t-tag>
+      </view>
+      <view class="row-price">
+        <text class="price {{isUp ? 'text-up' : 'text-down'}}">{{stockData.current_price}}</text>
+        <view class="change-info {{isUp ? 'text-up' : 'text-down'}}">
+          <text class="percent">{{stockData.change_percent}}%</text>
+          <text class="label">24H 涨跌幅</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="chart-switch">
+      <view class="switch-item {{chartType === 'ai' ? 'active' : ''}}" bindtap="switchChart" data-type="ai">
+        🧠 AI 模拟预测
+      </view>
+      <view class="switch-item {{chartType === 'real' ? 'active' : ''}}" bindtap="switchChart" data-type="real">
+        📈 当前市场走势
+      </view>
+    </view>
+
+    <view class="card chart-container">
+      <ec-canvas id="mychart-dom-line" canvas-id="mychart-line" ec="{{ ec }}"></ec-canvas>
+    </view>
+
+    <view class="card ai-capsule" wx:if="{{prediction}}">
+      <view class="capsule-header">
+        <text class="title">LSTM 趋势预测</text>
+        <text class="confidence">AI 置信度: {{prediction.confidence}}</text>
+      </view>
+      <view class="progress-bg">
+        <view class="progress-bar {{prediction.trend === 'up' ? 'bg-up' : 'bg-down'}}" 
+              style="width: {{prediction.score * 100}}%"></view>
+      </view>
+      <view class="capsule-desc">
+        未来5日趋势判定：<text class="highlight {{prediction.trend === 'up' ? 'text-up' : 'text-down'}}">{{prediction.trend_text}}</text>
+      </view>
+    </view>
+
+    <view class="card llm-card" wx:if="{{adviceHtml}}">
+      <view class="llm-header">
+        <text class="icon">🤖</text>
+        <text class="title">AlphaMind 投资锦囊</text>
+      </view>
+      <rich-text nodes="{{adviceHtml}}" class="llm-rich-text"></rich-text>
+    </view>
+  </block>
+</view>
