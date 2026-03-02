@@ -2,818 +2,776 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>AlphaMind — 智能投顾，洞察未来</title>
+  <title>AlphaMind — 智能投顾仪表盘</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
   <style>
-    /* ═══════════════ CSS Variables ═══════════════ */
+    /* ═══ CSS Variables ═══ */
     :root {
-      --brand: #8B0012;
-      --brand-light: rgba(139,0,18,.08);
-      --brand-mid: rgba(139,0,18,.18);
-      --accent: #FFA726;
-      --accent-light: rgba(255,167,38,.18);
-      --accent-mid: rgba(255,167,38,.35);
-      --bg: #FFF8F2;
-      --text: #2C1A12;
-      --border: #E7D9CD;
-      --muted: rgba(44,26,18,.65);
-      --shadow: 0 10px 30px rgba(0,0,0,.07);
-      --shadow-lg: 0 20px 50px rgba(0,0,0,.12);
-      --radius: 18px;
+      --sidebar-bg-from: #1e3a5f;
+      --sidebar-bg-to:   #2b5797;
       --nav-w: 220px;
-      --transition: .22s ease;
+      --accent: #4a90d9;
+      --accent-dark: #2b5797;
+      --bg: #f0f2f5;
+      --card-bg: #ffffff;
+      --text: #333333;
+      --text-muted: #666666;
+      --border: #e8e8e8;
+      --green: #52c41a;
+      --red:   #f5222d;
+      --shadow: 0 2px 8px rgba(0,0,0,.09);
+      --radius: 8px;
+      --transition: .2s ease;
     }
-
-    /* ═══════════════ Reset ═══════════════ */
-    *, *::before, *::after { box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      margin: 0;
-      font-family: "Microsoft YaHei", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      font-family: "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      overflow-x: hidden;
     }
 
-    /* ═══════════════ Animated Background ═══════════════ */
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      background:
-        radial-gradient(ellipse 1200px 600px at 20% -10%, rgba(255,167,38,.15), transparent 60%),
-        radial-gradient(ellipse 900px 500px at 90% 10%, rgba(139,0,18,.10), transparent 55%),
-        radial-gradient(ellipse 600px 400px at 50% 100%, rgba(255,167,38,.08), transparent 60%),
-        var(--bg);
-      animation: bgShift 12s ease-in-out infinite alternate;
-    }
-    @keyframes bgShift {
-      0%   { background-position: 20% -10%, 90% 10%, 50% 100%; }
-      100% { background-position: 25% -5%,  85% 15%, 55% 95%;  }
-    }
+    /* ═══ Layout ═══ */
+    #app { display: flex; min-height: 100vh; }
 
-    /* ═══════════════ Layout ═══════════════ */
-    #app {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    /* ═══════════════ Sidebar Nav ═══════════════ */
+    /* ═══ Sidebar ═══ */
     #sidebar {
       width: var(--nav-w);
       flex: 0 0 var(--nav-w);
-      min-height: 100vh;
-      position: fixed;
-      left: 0; top: 0; bottom: 0;
-      background: rgba(255,248,242,.80);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border-right: 1px solid var(--border);
-      box-shadow: 2px 0 20px rgba(0,0,0,.06);
+      background: linear-gradient(180deg, var(--sidebar-bg-from) 0%, var(--sidebar-bg-to) 100%);
+      color: #fff;
       display: flex;
       flex-direction: column;
-      padding: 22px 14px 20px;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
       z-index: 100;
       transition: transform var(--transition);
+      overflow-y: auto;
     }
-    .nav-logo {
+    .sb-header {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 8px 4px 16px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 14px;
+      padding: 16px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.12);
     }
-    .nav-logo img { width: 40px; height: 40px; border-radius: 10px; }
-    .nav-logo span { font-size: 15px; font-weight: 950; color: var(--brand); letter-spacing: .3px; }
-    .nav-items { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .sb-logo { width: 36px; height: 36px; border-radius: 7px; }
+    .sb-brand { flex: 1; font-size: 14px; font-weight: 700; letter-spacing: .3px; }
+    .sb-search-btn {
+      background: none; border: none; color: rgba(255,255,255,.65);
+      cursor: pointer; font-size: 15px; padding: 4px; line-height: 1;
+    }
+    .sb-nav { flex: 1; padding: 8px 0 16px; }
+    .nav-group-label {
+      font-size: 10.5px;
+      color: rgba(255,255,255,.45);
+      padding: 10px 16px 4px;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
     .nav-item {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 12px;
-      border-radius: 13px;
+      padding: 10px 16px;
       cursor: pointer;
-      font-size: 13.5px;
-      font-weight: 600;
-      color: var(--text);
-      transition: background var(--transition), color var(--transition), transform .1s;
-      user-select: none;
-      text-decoration: none;
-    }
-    .nav-item:hover {
-      background: var(--brand-light);
-      color: var(--brand);
-    }
-    .nav-item.active {
-      background: linear-gradient(135deg, rgba(139,0,18,.15), rgba(255,167,38,.12));
-      color: var(--brand);
-      font-weight: 950;
-      box-shadow: inset 0 0 0 1px rgba(139,0,18,.18);
-    }
-    .nav-item .icon { font-size: 17px; flex: 0 0 22px; text-align: center; }
-    .nav-footer {
-      border-top: 1px solid var(--border);
-      padding-top: 12px;
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    /* ═══════════════ Mobile Top Nav ═══════════════ */
-    #topnav {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: 56px;
-      background: rgba(255,248,242,.88);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border-bottom: 1px solid var(--border);
-      box-shadow: 0 2px 12px rgba(0,0,0,.07);
-      z-index: 200;
-      align-items: center;
-      padding: 0 16px;
-      gap: 12px;
-    }
-    #topnav img { width: 32px; height: 32px; border-radius: 8px; }
-    #topnav .brand-name { font-size: 15px; font-weight: 950; color: var(--brand); flex: 1; }
-    #hamburger {
-      width: 36px; height: 36px;
-      display: flex; flex-direction: column; justify-content: center;
-      align-items: center; gap: 5px; cursor: pointer; border-radius: 10px;
+      font-size: 13px;
+      color: rgba(255,255,255,.82);
       transition: background var(--transition);
+      user-select: none;
     }
-    #hamburger:hover { background: var(--brand-light); }
-    #hamburger span {
-      display: block; width: 20px; height: 2px;
-      background: var(--brand); border-radius: 2px;
-      transition: transform var(--transition), opacity var(--transition);
+    .nav-item:hover { background: rgba(255,255,255,.1); }
+    .nav-item.active {
+      background: rgba(74,144,217,.38);
+      color: #fff;
+      border-left: 3px solid var(--accent);
+      padding-left: 13px;
     }
-    #hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    #hamburger.open span:nth-child(2) { opacity: 0; }
-    #hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .nav-item .icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
 
-    #mobile-menu {
+    /* ═══ Overlay (mobile) ═══ */
+    #sb-overlay {
       display: none;
-      position: fixed;
-      top: 56px; left: 0; right: 0;
-      background: rgba(255,248,242,.97);
-      backdrop-filter: blur(18px);
-      border-bottom: 1px solid var(--border);
-      z-index: 190;
-      padding: 10px 14px;
-      flex-direction: column;
-      gap: 4px;
-      box-shadow: 0 8px 20px rgba(0,0,0,.08);
-      animation: slideDown .2s ease;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 99;
     }
-    #mobile-menu.open { display: flex; }
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    #sb-overlay.show { display: block; }
 
-    /* ═══════════════ Main Content ═══════════════ */
+    /* ═══ Main area ═══ */
     #main {
       margin-left: var(--nav-w);
       flex: 1;
       min-width: 0;
-      padding: 30px 28px 60px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
-    /* ═══════════════ Views / Pages ═══════════════ */
-    .view {
-      display: none;
-      animation: fadeIn .3s ease;
+    /* ═══ Top status bar ═══ */
+    #topbar {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+      height: 48px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow);
+      flex-shrink: 0;
     }
+    #hamburger {
+      display: none;
+      background: none; border: none;
+      cursor: pointer; font-size: 20px;
+      color: var(--text); margin-right: 10px;
+      line-height: 1;
+    }
+    .breadcrumb {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; color: var(--text-muted);
+    }
+    .breadcrumb .sep { color: #ccc; }
+    .breadcrumb .current { color: var(--text); font-weight: 500; }
+    .topbar-right {
+      display: flex; align-items: center; gap: 16px;
+      font-size: 12px; color: var(--text-muted);
+    }
+    .tb-stat { display: flex; align-items: center; gap: 4px; }
+    #tb-time { font-weight: 600; color: var(--text); }
+
+    /* ═══ Content ═══ */
+    #content { flex: 1; padding: 20px; overflow-y: auto; }
+
+    /* ═══ Views ═══ */
+    .view { display: none; animation: fadeIn .25s ease; }
     .view.active { display: block; }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
+      from { opacity: 0; transform: translateY(10px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ═══════════════ Cards ═══════════════ */
+    /* ═══ Page header ═══ */
+    .page-hdr {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .page-title { font-size: 17px; font-weight: 700; color: var(--text); }
+    .page-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .welcome { font-size: 12px; color: var(--text-muted); text-align: right; }
+
+    /* ═══ Card ═══ */
     .card {
-      background: rgba(255,255,255,.88);
-      border: 1px solid var(--border);
+      background: var(--card-bg);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 22px;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      transition: box-shadow var(--transition), transform var(--transition);
+      padding: 16px 20px;
     }
-    .card:hover { box-shadow: var(--shadow-lg); }
-    .card h2 { margin: 0 0 6px; font-size: 15px; color: var(--brand); }
-    .card small { color: var(--muted); font-size: 12px; }
+    .card-title {
+      font-size: 14px; font-weight: 600;
+      color: var(--text); margin-bottom: 12px;
+    }
 
-    /* ═══════════════ Buttons ═══════════════ */
+    /* ═══ Stat cards ═══ */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .stat-lbl { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+    .stat-val { font-size: 26px; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .stat-chg { font-size: 13px; margin-top: 6px; }
+    .up { color: var(--green); }
+    .dn { color: var(--red); }
+    .risk-bar-wrap { margin-top: 8px; }
+    .risk-bar-track { height: 8px; background: #e8e8e8; border-radius: 999px; overflow: hidden; margin-top: 6px; }
+    .risk-bar-fill { height: 100%; background: linear-gradient(90deg, #4a90d9, #52c41a); border-radius: 999px; transition: width .5s; }
+    .risk-bar-lbl { font-size: 12px; color: var(--text-muted); margin-top: 4px; display: flex; justify-content: space-between; }
+
+    /* ═══ Charts row ═══ */
+    .charts-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .chart-box { width: 100%; height: 240px; }
+
+    /* ═══ Table ═══ */
+    .tbl-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th {
+      background: #fafafa; padding: 10px 12px;
+      text-align: left; font-weight: 600;
+      color: var(--text-muted); border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafafa; }
+    .profit { color: var(--green); }
+    .loss   { color: var(--red); }
+
+    /* ═══ Buttons ═══ */
     .btn {
-      border: none; border-radius: 999px;
-      padding: 10px 18px; cursor: pointer;
-      font-weight: 950; font-size: 13px;
-      display: inline-flex; align-items: center; gap: 8px;
-      transition: transform .08s, background var(--transition), box-shadow var(--transition);
+      border: none; border-radius: 6px;
+      padding: 9px 16px; cursor: pointer;
+      font-weight: 600; font-size: 13px;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: transform .05s, background var(--transition);
       user-select: none; text-decoration: none;
     }
     .btn:active { transform: translateY(1px); }
-    .btn-primary {
-      background: var(--brand); color: #fff;
-      box-shadow: 0 4px 14px rgba(139,0,18,.30);
-    }
-    .btn-primary:hover {
-      background: var(--accent); color: #23140e;
-      box-shadow: 0 4px 18px rgba(255,167,38,.40);
-    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-dark); }
     .btn-ghost {
       background: transparent;
       border: 1px solid var(--border);
       color: var(--text);
     }
-    .btn-ghost:hover { background: var(--brand-light); border-color: rgba(139,0,18,.25); }
+    .btn-ghost:hover { background: #f5f5f5; }
     .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; align-items: center; }
-
-    /* ═══════════════ Form Controls ═══════════════ */
-    .section-title { margin: 16px 0 10px; font-size: 13px; font-weight: 950; color: var(--brand); }
-    .row { display: grid; grid-template-columns: 1.2fr 1.8fr; gap: 10px; align-items: center; margin: 10px 0; }
-    @media(max-width:640px){ .row { grid-template-columns: 1fr; } }
-    label { font-size: 13px; }
-    select, input[type="text"], input[type="password"], textarea {
-      width: 100%; padding: 10px 14px;
-      border-radius: 14px; border: 1px solid #d9cabc;
-      background: rgba(255,255,255,.9); outline: none;
-      font-size: 13px; color: var(--text);
-      font-family: inherit;
-      transition: box-shadow var(--transition), border-color var(--transition), transform .06s;
-    }
-    select:focus, input:focus, textarea:focus {
-      border-color: rgba(255,167,38,.85);
-      box-shadow: 0 0 0 3px rgba(255,167,38,.22);
-      transform: translateY(-1px);
-    }
-    textarea { min-height: 92px; resize: vertical; }
-    .hint { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 5px; }
-
-    /* ═══════════════ Hero / Home ═══════════════ */
-    #view-home {
-      max-width: 900px;
-    }
-    .hero {
-      border-radius: 24px;
-      background: linear-gradient(135deg, rgba(139,0,18,.92) 0%, rgba(100,0,10,.95) 50%, rgba(50,10,5,1) 100%);
-      color: #fff;
-      padding: 56px 48px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: var(--shadow-lg);
-    }
-    .hero::before {
-      content: "";
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse 60% 60% at 80% 50%, rgba(255,167,38,.25), transparent 65%);
-      pointer-events: none;
-    }
-    .hero-logo {
-      width: 72px; height: 72px; border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.35);
-      margin-bottom: 20px;
-    }
-    .hero h1 {
-      margin: 0 0 10px;
-      font-size: clamp(26px, 4vw, 42px);
-      font-weight: 950;
-      letter-spacing: .5px;
-      line-height: 1.2;
-    }
-    .hero h1 span { color: var(--accent); }
-    .hero p {
-      margin: 0 0 28px;
-      font-size: 15px;
-      opacity: .85;
-      max-width: 520px;
-      line-height: 1.7;
-    }
-    .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
-    .btn-hero {
-      background: var(--accent); color: #23140e;
-      font-size: 14px; padding: 12px 24px;
-      box-shadow: 0 6px 20px rgba(255,167,38,.40);
-    }
-    .btn-hero:hover { background: #fff; color: var(--brand); }
-    .btn-hero-ghost {
-      background: rgba(255,255,255,.12);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,.30);
-      font-size: 14px; padding: 12px 24px;
-    }
-    .btn-hero-ghost:hover { background: rgba(255,255,255,.22); }
-    .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-      gap: 16px;
-      margin-top: 24px;
-    }
-    .feature-card {
-      background: rgba(255,255,255,.88);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 20px;
-      box-shadow: var(--shadow);
-      transition: transform var(--transition), box-shadow var(--transition);
-    }
-    .feature-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
-    }
-    .feature-icon { font-size: 28px; margin-bottom: 10px; }
-    .feature-card h3 { margin: 0 0 6px; font-size: 14px; color: var(--brand); }
-    .feature-card p { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.55; }
-
-    /* ═══════════════ Assessment ═══════════════ */
-    #view-assessment { max-width: 1000px; }
-    .assess-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 16px; }
-    @media(max-width:920px){ .assess-grid { grid-template-columns: 1fr; } }
     .spinner {
-      width: 13px; height: 13px; border-radius: 50%;
+      width: 12px; height: 12px; border-radius: 50%;
       border: 2px solid rgba(255,255,255,.35); border-top-color: #fff;
       display: none; animation: spin 1s linear infinite;
     }
     .btn-primary.loading .spinner { display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .status-txt { font-size: 12px; color: var(--text-muted); }
+    .hint { font-size: 12px; color: var(--text-muted); margin-top: 5px; line-height: 1.5; }
+    .footer-note { margin-top: 12px; font-size: 11px; color: var(--text-muted); }
+
+    /* ═══ Form controls ═══ */
+    .section-title {
+      margin: 16px 0 10px; font-size: 13px;
+      font-weight: 700; color: var(--accent-dark);
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1.2fr 1.8fr;
+      gap: 10px; align-items: center; margin: 10px 0;
+    }
+    @media(max-width:640px){ .row { grid-template-columns: 1fr; } }
+    label { font-size: 13px; }
+    select, input[type="text"], input[type="password"], textarea {
+      width: 100%; padding: 9px 12px;
+      border-radius: 6px; border: 1px solid #d9d9d9;
+      background: #fff; outline: none;
+      font-size: 13px; color: var(--text);
+      font-family: inherit;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    select:focus, input:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(74,144,217,.18);
+    }
+    textarea { min-height: 80px; resize: vertical; }
+
+    /* ═══ Assessment grid ═══ */
+    .assess-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 16px; }
+    @media(max-width:900px){ .assess-grid { grid-template-columns: 1fr; } }
     .pill {
-      font-size: 11px; font-weight: 900; padding: 5px 10px;
-      border-radius: 999px; background: var(--accent-light);
-      border: 1px solid var(--accent-mid); color: var(--brand);
+      font-size: 11px; font-weight: 700; padding: 5px 10px;
+      border-radius: 999px; background: rgba(74,144,217,.15);
+      border: 1px solid rgba(74,144,217,.3); color: var(--accent-dark);
     }
     .steps { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
     .step {
-      flex: 1 1 auto; border-radius: 14px;
-      border: 1px solid var(--border); background: rgba(255,255,255,.6);
-      padding: 10px 12px; min-width: 140px;
+      flex: 1 1 auto; border-radius: var(--radius);
+      border: 1px solid var(--border); background: #f6f9ff;
+      padding: 10px 12px; min-width: 130px;
     }
-    .step .k { font-size: 11px; color: var(--muted); }
-    .step .v { margin-top: 4px; font-size: 13px; font-weight: 950; color: var(--brand); }
-    .mini { margin-top: 12px; padding: 12px; border-radius: 14px; background: rgba(255,248,242,.8); border: 1px solid var(--brand-mid); }
-    details { margin-top: 12px; border: 1px dashed var(--border); border-radius: 14px; background: rgba(255,255,255,.55); padding: 10px 12px; }
-    details summary { cursor: pointer; font-weight: 950; color: var(--brand); list-style: none; }
+    .step .k { font-size: 11px; color: var(--text-muted); }
+    .step .v { margin-top: 4px; font-size: 13px; font-weight: 700; color: var(--accent-dark); }
+    .mini { margin-top: 12px; padding: 10px 12px; border-radius: var(--radius); background: #f0f5ff; border: 1px solid rgba(74,144,217,.2); }
+    details { margin-top: 12px; border: 1px dashed var(--border); border-radius: var(--radius); background: #fafafa; padding: 10px 12px; }
+    details summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--accent-dark); list-style: none; }
     details summary::-webkit-details-marker { display: none; }
-    .codebox { margin-top: 10px; font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace; font-size: 11px; background: #f7f2ec; border: 1px solid var(--border); border-radius: 12px; padding: 10px; white-space: pre-wrap; max-height: 220px; overflow: auto; color: #1f120d; }
-    .status { font-size: 12px; color: var(--muted); }
-    .footer-note { margin-top: 14px; font-size: 11px; color: var(--muted); }
-
-    /* ═══════════════ Result ═══════════════ */
-    #view-result { max-width: 1080px; }
-    .headline { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
-    .risk {
-      display: inline-flex; flex-direction: column; gap: 6px;
-      padding: 14px 16px; border-radius: 16px;
-      background: var(--brand-light);
-      border: 1px solid rgba(139,0,18,.18);
-      min-width: 240px;
+    .codebox {
+      margin-top: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11px; background: #f5f5f5; border: 1px solid var(--border);
+      border-radius: 6px; padding: 10px; white-space: pre-wrap;
+      max-height: 220px; overflow: auto; color: #1f120d;
     }
-    .k { font-size: 11px; color: var(--muted); }
-    .v { font-size: 18px; font-weight: 950; color: var(--brand); letter-spacing: .2px; }
-    .score { display: inline-flex; align-items: center; gap: 8px; font-weight: 950; color: var(--brand); padding: 6px 10px; border-radius: 999px; background: var(--accent-light); border: 1px solid var(--accent-mid); }
-    .desc { font-size: 13px; color: var(--text); line-height: 1.65; max-width: 760px; }
-    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    @media(max-width:980px){ .two { grid-template-columns: 1fr; } }
+
+    /* ═══ Result ═══ */
+    .result-gap { display: flex; flex-direction: column; gap: 16px; }
+    .headline { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+    .risk-badge {
+      display: flex; flex-direction: column; gap: 5px;
+      background: linear-gradient(135deg, #1e3a5f, #2b5797);
+      color: #fff; border-radius: var(--radius);
+      padding: 14px 18px; min-width: 230px;
+    }
+    .risk-badge .k  { font-size: 11px; opacity: .75; }
+    .risk-badge .v  { font-size: 20px; font-weight: 700; letter-spacing: .2px; }
+    .risk-badge .score {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-weight: 700; padding: 4px 10px;
+      border-radius: 999px; background: rgba(255,255,255,.2);
+      font-size: 13px; width: fit-content;
+    }
+    .desc { font-size: 13px; color: var(--text); line-height: 1.65; flex: 1; min-width: 0; }
+    .two   { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-    @media(max-width:980px){ .three { grid-template-columns: 1fr; } }
-    #radarUser, #radarCompare, #priceChart { width: 100%; height: 320px; border-radius: 16px; background: #fff; border: 1px solid var(--border); }
+    @media(max-width:980px){ .two { grid-template-columns: 1fr; } .three { grid-template-columns: 1fr; } }
+    #radarUser, #radarCompare, #priceChart { width: 100%; height: 300px; border-radius: var(--radius); background: #fff; border: 1px solid var(--border); }
     .suggest-item {
       display: flex; justify-content: space-between; gap: 10px;
-      padding: 12px; border-radius: 16px;
-      background: rgba(255,248,242,.85); border: 1px solid rgba(139,0,18,.10);
+      padding: 10px 12px; border-radius: var(--radius);
+      background: #f0f5ff; border: 1px solid rgba(74,144,217,.2);
       margin-bottom: 10px; align-items: center;
     }
-    .suggest-item .name { font-weight: 950; }
-    .suggest-item .desc { font-size: 12px; color: var(--muted); margin-top: 4px; }
-    .suggest-item .pct { font-weight: 950; color: var(--brand); white-space: nowrap; }
-    .role-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 8px; }
-    .role-card { padding: 12px; border-radius: 16px; background: rgba(255,248,242,.85); border: 1px solid rgba(139,0,18,.10); }
-    .role-card .title { font-weight: 950; color: var(--brand); margin-bottom: 6px; }
-    .role-card .text { font-size: 13px; line-height: 1.65; color: var(--text); white-space: pre-wrap; }
-    .mono { font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,"Courier New",monospace; font-size: 11px; background: #f7f2ec; border: 1px solid var(--border); border-radius: 14px; padding: 10px; white-space: pre-wrap; max-height: 260px; overflow: auto; color: #1f120d; }
-    .empty { padding: 20px; border-radius: 16px; background: rgba(255,255,255,.88); border: 1px solid var(--border); box-shadow: var(--shadow); color: var(--muted); line-height: 1.7; }
-    .result-gap { display: flex; flex-direction: column; gap: 16px; }
-    .ts-pill { font-size: 11px; font-weight: 950; padding: 5px 10px; border-radius: 999px; background: var(--accent-light); border: 1px solid var(--accent-mid); }
+    .suggest-item .name { font-weight: 700; font-size: 13px; }
+    .suggest-item .desc { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+    .suggest-item .pct  { font-weight: 700; color: var(--accent-dark); white-space: nowrap; }
+    .role-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+    .role-card { padding: 10px 12px; border-radius: var(--radius); background: #f6f9ff; border: 1px solid rgba(74,144,217,.18); }
+    .role-card .title { font-weight: 700; color: var(--accent-dark); margin-bottom: 5px; font-size: 13px; }
+    .role-card .text  { font-size: 12px; line-height: 1.65; color: var(--text); white-space: pre-wrap; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11px; background: #f5f5f5; border: 1px solid var(--border); border-radius: 6px; padding: 10px; white-space: pre-wrap; max-height: 260px; overflow: auto; }
+    .empty { padding: 20px; border-radius: var(--radius); background: var(--card-bg); border: 1px solid var(--border); box-shadow: var(--shadow); color: var(--text-muted); line-height: 1.7; }
+    .ts-pill { font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 999px; background: rgba(74,144,217,.15); border: 1px solid rgba(74,144,217,.3); color: var(--accent-dark); }
 
-    /* ═══════════════ Survey ═══════════════ */
-    #view-survey { max-width: 980px; }
-    .bar { height: 10px; border-radius: 999px; background: rgba(139,0,18,.10); overflow: hidden; }
-    .bar > div { height: 100%; width: 0%; background: linear-gradient(90deg, rgba(139,0,18,.9), rgba(255,167,38,.9)); transition: width .25s; }
-    .qcard { padding: 12px; border-radius: 16px; background: rgba(255,248,242,.85); border: 1px solid rgba(139,0,18,.10); margin: 10px 0; }
-    .qtitle { font-weight: 900; margin-bottom: 8px; font-size: 13px; }
+    /* ═══ Survey ═══ */
+    .bar { height: 10px; border-radius: 999px; background: #e8e8e8; overflow: hidden; }
+    .bar > div { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), #52c41a); transition: width .25s; }
+    .qcard { padding: 12px; border-radius: var(--radius); background: #f6f9ff; border: 1px solid rgba(74,144,217,.18); margin: 10px 0; }
+    .qtitle { font-weight: 700; margin-bottom: 8px; font-size: 13px; }
     .likert { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-    .likert .opt { display: flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 999px; background: rgba(255,255,255,.7); cursor: pointer; }
-    .likert input { accent-color: var(--brand); }
-    .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,.40); padding: 16px; z-index: 500; }
-    .modal .box { max-width: 520px; width: 100%; background: #fff; border-radius: 18px; border: 1px solid var(--border); box-shadow: var(--shadow-lg); padding: 20px; animation: fadeIn .25s ease; }
-    .modal .box h3 { margin: 0 0 6px; color: var(--brand); }
+    .likert .opt { display: flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 999px; background: #fff; cursor: pointer; font-size: 13px; transition: border-color var(--transition); }
+    .likert .opt:hover { border-color: var(--accent); }
+    .likert input { accent-color: var(--accent); }
 
-    /* ═══════════════ Admin ═══════════════ */
-    #view-admin { max-width: 520px; }
-    .admin-card { margin-top: 16px; }
-    .admin-input-row { margin: 12px 0; }
-    .admin-input-row label { display: block; font-size: 13px; margin-bottom: 6px; }
+    /* ═══ Modal ═══ */
+    .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,.45); padding: 16px; z-index: 500; }
+    .modal .box { max-width: 520px; width: 100%; background: #fff; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 8px 30px rgba(0,0,0,.15); padding: 24px; animation: fadeIn .2s ease; }
+    .modal .box h3 { margin: 0 0 8px; color: var(--accent-dark); }
 
-    /* ═══════════════ Topbar (page header) ═══════════════ */
+    /* ═══ Admin ═══ */
+    #view-admin { max-width: 480px; }
+    .admin-row { margin: 12px 0; }
+    .admin-row label { display: block; font-size: 13px; margin-bottom: 6px; }
+
+    /* ═══ Page topbar (header inside views) ═══ */
     .page-topbar {
       display: flex; align-items: center; gap: 14px;
       padding: 14px 18px; margin-bottom: 18px;
       border: 1px solid var(--border); border-radius: var(--radius);
-      background: rgba(255,255,255,.72);
-      box-shadow: var(--shadow); backdrop-filter: blur(10px);
+      background: rgba(255,255,255,.85); box-shadow: var(--shadow);
     }
+    .page-topbar img { width: 42px; height: 42px; border-radius: 9px; }
     .page-topbar .brand { flex: 1; min-width: 0; }
-    .page-topbar .brand h1 { margin: 0; font-size: 18px; color: var(--brand); }
-    .page-topbar .brand p { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
+    .page-topbar .brand h1 { margin: 0; font-size: 17px; color: var(--accent-dark); }
+    .page-topbar .brand p  { margin: 4px 0 0; font-size: 12px; color: var(--text-muted); }
 
-    /* ═══════════════ Responsive ═══════════════ */
+    /* ═══ Responsive ═══ */
     @media(max-width: 860px) {
       #sidebar { transform: translateX(-100%); }
       #sidebar.mobile-open { transform: translateX(0); }
-      #topnav { display: flex; }
-      #main { margin-left: 0; padding: 74px 16px 50px; }
+      #main { margin-left: 0; }
+      #hamburger { display: inline-block; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .charts-row { grid-template-columns: 1fr; }
+      .three { grid-template-columns: 1fr; }
     }
-    @media(max-width: 500px) {
-      .hero { padding: 36px 22px; }
-      .hero h1 { font-size: 24px; }
-      .page-topbar { padding: 10px 14px; }
-      .page-topbar .brand h1 { font-size: 15px; }
+    @media(max-width: 540px) {
+      .stats-row { grid-template-columns: 1fr; }
+      #content { padding: 12px; }
+      .topbar-right .tb-stat:not(:last-child):not(:nth-last-child(-n+2)) { display: none; }
     }
   </style>
 </head>
 <body>
 
-<!-- ═══════════════ Mobile Top Nav ═══════════════ -->
-<nav id="topnav">
-  <img src="alphamind_logo.png" alt="AlphaMind" />
-  <span class="brand-name">AlphaMind</span>
-  <div id="hamburger" onclick="toggleMobileMenu()" aria-label="菜单">
-    <span></span><span></span><span></span>
-  </div>
-</nav>
-<div id="mobile-menu">
-  <a class="nav-item" data-view="home"       onclick="nav('home',true)"><span class="icon">🏠</span>首页</a>
-  <a class="nav-item" data-view="assessment" onclick="nav('assessment',true)"><span class="icon">📝</span>投资评测</a>
-  <a class="nav-item" data-view="result"     onclick="nav('result',true)"><span class="icon">📊</span>评测结果</a>
-  <a class="nav-item" data-view="survey"     onclick="nav('survey',true)"><span class="icon">📋</span>使用问卷</a>
-  <a class="nav-item" data-view="admin"      onclick="nav('admin',true)"><span class="icon">🔐</span>管理员登录</a>
-</div>
+<!-- Sidebar overlay -->
+<div id="sb-overlay" onclick="closeSidebar()"></div>
 
-<!-- ═══════════════ Sidebar ═══════════════ -->
-<div id="sidebar">
-  <div class="nav-logo">
-    <img src="alphamind_logo.png" alt="AlphaMind Logo" />
-    <span>AlphaMind</span>
+<!-- ═══ Sidebar ═══ -->
+<aside id="sidebar">
+  <div class="sb-header">
+    <img class="sb-logo" src="alphamind_logo.png" alt="AlphaMind" onerror="this.style.display='none'" />
+    <span class="sb-brand">功能导航</span>
+    <button class="sb-search-btn" title="搜索">🔍</button>
   </div>
-  <nav class="nav-items">
-    <a class="nav-item" data-view="home"       onclick="nav('home')"><span class="icon">🏠</span>首页</a>
-    <a class="nav-item" data-view="assessment" onclick="nav('assessment')"><span class="icon">📝</span>投资评测</a>
-    <a class="nav-item" data-view="result"     onclick="nav('result')"><span class="icon">📊</span>评测结果</a>
-    <a class="nav-item" data-view="survey"     onclick="nav('survey')"><span class="icon">📋</span>使用问卷</a>
-    <a class="nav-item" data-view="admin"      onclick="nav('admin')"><span class="icon">🔐</span>管理员登录</a>
+  <nav class="sb-nav">
+    <div class="nav-group-label">核心功能</div>
+    <div class="nav-item active" data-view="dashboard" onclick="nav('dashboard')">
+      <span class="icon">📊</span><span>投资分析</span>
+    </div>
+    <div class="nav-item" data-view="assessment" onclick="nav('assessment')">
+      <span class="icon">📝</span><span>智能投顾分析</span>
+    </div>
+    <div class="nav-item" data-view="result" onclick="nav('result')">
+      <span class="icon">🎯</span><span>行为感知风险模型</span>
+    </div>
+    <div class="nav-item" data-view="survey" onclick="nav('survey')">
+      <span class="icon">📋</span><span>资产配置建议</span>
+    </div>
+
+    <div class="nav-group-label">系统管理</div>
+    <div class="nav-item" data-view="dashboard" onclick="nav('dashboard')">
+      <span class="icon">📈</span><span>市场行情概览</span>
+    </div>
+    <div class="nav-item" data-view="result" onclick="nav('result')">
+      <span class="icon">⚠️</span><span>风险预警信息</span>
+    </div>
+    <div class="nav-item" data-view="survey" onclick="nav('survey')">
+      <span class="icon">👤</span><span>投资行为画像</span>
+    </div>
+    <div class="nav-item" data-view="admin" onclick="nav('admin')">
+      <span class="icon">🔐</span><span>论文数据管理</span>
+    </div>
   </nav>
-  <div class="nav-footer">AlphaMind v1.2.0<br>智能投顾平台</div>
-</div>
+</aside>
 
-<!-- ═══════════════ Main Content ═══════════════ -->
+<!-- ═══ Main area ═══ -->
 <div id="main">
 
-  <!-- ── HOME ── -->
-  <section id="view-home" class="view">
-    <div class="hero">
-      <img class="hero-logo" src="alphamind_logo.png" alt="AlphaMind Logo" />
-      <h1>AlphaMind —<br><span>智能投顾，洞察未来</span></h1>
-      <p>基于 AI 的投资人格评测系统，通过多维数据分析为您量身定制资产配置建议。从风险画像到市场观点，一站式掌握您的投资全貌。</p>
-      <div class="hero-cta">
-        <button class="btn btn-hero" onclick="nav('assessment')">⚡ 开始投资评测</button>
-        <button class="btn btn-hero-ghost" onclick="nav('result')">📊 查看评测结果</button>
-      </div>
+  <!-- Top status bar -->
+  <header id="topbar">
+    <div class="breadcrumb">
+      <button id="hamburger" onclick="toggleSidebar()">☰</button>
+      <span>🏠 Home</span>
+      <span class="sep">/</span>
+      <span class="current" id="bc-current">仪表盘</span>
     </div>
-    <div class="features">
-      <div class="feature-card">
-        <div class="feature-icon">📝</div>
-        <h3>投资人格评测</h3>
-        <p>9道精心设计的问题，全面评估您的风险偏好、投资目标与资金状况。</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🤖</div>
-        <h3>AI 智能分析</h3>
-        <p>接入专业 AI 模型，输出风险类型、分数与个性化雷达画像。</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">📈</div>
-        <h3>多维可视化</h3>
-        <p>ECharts 雷达图 + 走势折线图 + 多角色市场解析，全方位呈现结果。</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🛡️</div>
-        <h3>本地数据安全</h3>
-        <p>数据存储于浏览器 localStorage，无需上传，隐私有保障。</p>
-      </div>
+    <div class="topbar-right">
+      <div class="tb-stat"><span id="tb-time">-</span></div>
+      <div class="tb-stat"><span>📶</span><span>在线</span></div>
+      <div class="tb-stat"><span>💻</span><span>CPU 正常</span></div>
+      <div class="tb-stat"><span>🌡️</span><span>37°C</span></div>
     </div>
-  </section>
+  </header>
 
-  <!-- ── ASSESSMENT ── -->
-  <section id="view-assessment" class="view">
-    <header class="page-topbar">
-      <img style="width:42px;height:42px;border-radius:10px;" src="alphamind_logo.png" alt="AlphaMind Logo" />
-      <div class="brand">
-        <h1>AlphaMind 投资人格评测</h1>
-        <p>填写问卷 → 一键分析 → 自动查看结果</p>
+  <!-- Content -->
+  <div id="content">
+
+    <!-- ══ DASHBOARD ══ -->
+    <section id="view-dashboard" class="view active">
+      <div class="page-hdr">
+        <div>
+          <div class="page-title">AlphaMind基于大模型的智能投顾与行为感知系统</div>
+          <div class="page-sub">实时数据仪表盘 · 综合资产分析</div>
+        </div>
+        <div class="welcome">
+          <div>欢迎使用 AlphaMind</div>
+          <div id="dash-time" style="font-size:11px;"></div>
+        </div>
       </div>
-      <span class="pill">Web v1.2.0</span>
-    </header>
 
-    <div class="assess-grid">
-      <section class="card">
-        <h2>📝 评测问卷</h2>
-        <small>选择最符合你当前情况的选项，系统将生成风险类型、雷达画像与资产建议。</small>
-
-        <div class="section-title">基础信息</div>
-        <div class="row">
-          <label for="a_userId">用户标识（可选）</label>
-          <div>
-            <input id="a_userId" type="text" value="guest" />
-            <div class="hint">用于后端日志追踪，不填写也可以。</div>
+      <!-- Stat cards -->
+      <div class="stats-row">
+        <div class="card">
+          <div class="stat-lbl">💰 总资产规模（元）</div>
+          <div class="stat-val" id="d-totalAssets">895,624.78</div>
+          <div class="stat-chg up">↑ +2.35%&nbsp;较上月</div>
+        </div>
+        <div class="card">
+          <div class="stat-lbl">📈 净值增长（元）</div>
+          <div class="stat-val" id="d-netGrowth">45,892.16</div>
+          <div class="stat-chg up">↑ +5.82%&nbsp;本年累计</div>
+        </div>
+        <div class="card">
+          <div class="stat-lbl">🛡️ 风险承受等级</div>
+          <div class="stat-val" style="font-size:17px;" id="d-riskType">稳健型(中等风险)</div>
+          <div class="risk-bar-wrap">
+            <div class="risk-bar-track"><div class="risk-bar-fill" id="d-riskBar" style="width:73%"></div></div>
+            <div class="risk-bar-lbl"><span id="d-riskScore">评分 78分</span><span id="d-riskPct">73%</span></div>
           </div>
         </div>
-
-        <div class="section-title">问卷问题</div>
-        <div id="a_questions"></div>
-
-        <div class="actions">
-          <button id="a_btnSubmit" type="button" class="btn btn-primary" onclick="submitToAI()">
-            <span class="spinner"></span>
-            ⚡ 开始分析并查看结果
-          </button>
-          <button type="button" class="btn btn-ghost" onclick="resetAssessForm()">重置</button>
-          <span id="a_statusText" class="status">就绪</span>
-        </div>
-
-        <details>
-          <summary>高级（仅调试用）：查看生成的提示词</summary>
-          <div class="hint">默认收起，不影响收件人阅读。</div>
-          <pre id="a_promptPreview" class="codebox">（提交后生成）</pre>
-        </details>
-
-        <div class="footer-note">说明：页面已隐藏 API 配置，默认对接线上环境。</div>
-      </section>
-
-      <aside class="card">
-        <h2>📌 你将获得的内容</h2>
-        <small>提交后切换到结果页，结果页可直接截图/转发。</small>
-        <div class="steps">
-          <div class="step"><div class="k">输出 1</div><div class="v">风险类型（四档）</div></div>
-          <div class="step"><div class="k">输出 2</div><div class="v">风险分数（0-100）</div></div>
-          <div class="step"><div class="k">输出 3</div><div class="v">雷达画像 + 配置建议</div></div>
-        </div>
-        <div class="mini"><div class="hint" style="margin:0">结果页新增：市场观点（多角色）/ 产品对比雷达图 / 近7日走势。</div></div>
-      </aside>
-    </div>
-  </section>
-
-  <!-- ── RESULT ── -->
-  <section id="view-result" class="view">
-    <header class="page-topbar">
-      <img style="width:42px;height:42px;border-radius:10px;" src="alphamind_logo.png" alt="AlphaMind Logo" />
-      <div class="brand">
-        <h1>AlphaMind 评测结果</h1>
-        <p>直接与他人分享（报告版）。</p>
-      </div>
-      <span class="ts-pill" id="r_tsPill">-</span>
-    </header>
-
-    <div class="result-gap">
-      <div class="empty" id="r_emptyState" style="display:none;">
-        没有找到评测结果。请先在问卷页完成评测后再查看结果。
-        <div class="actions" style="margin-top:12px;">
-          <button class="btn btn-primary" onclick="nav('assessment')">前往评测</button>
-        </div>
       </div>
 
-      <section class="card" id="r_resultCard" style="display:none;">
-        <div class="headline">
-          <div class="risk">
-            <div class="k">风险类型</div>
-            <div class="v" id="r_riskType">-</div>
-            <div class="k">风险分数</div>
-            <div class="score"><span id="r_riskScore">-</span> / 100</div>
-            <div class="k" style="margin-top:6px;">用户评分（user_score）</div>
-            <div class="v" style="font-size:14px;" id="r_userScore">-</div>
-          </div>
-          <div class="desc">
-            <div class="k">简评</div>
-            <div id="r_riskDesc" style="margin-top:6px;">-</div>
-            <div class="actions">
-              <button class="btn btn-primary" onclick="copySummary()">复制结论</button>
-              <button class="btn btn-ghost" onclick="downloadJSON()">导出 JSON</button>
-              <button class="btn btn-ghost" onclick="nav('assessment')">重新评测</button>
-              <button class="btn btn-ghost" onclick="nav('survey')">参与使用后问卷</button>
+      <!-- Charts -->
+      <div class="charts-row">
+        <div class="card"><div class="card-title">🍩 资产分布情况</div><div class="chart-box" id="d-assetChart"></div></div>
+        <div class="card"><div class="card-title">📉 近30日收益趋势</div><div class="chart-box" id="d-trendChart"></div></div>
+        <div class="card"><div class="card-title">🏭 持仓行业分布</div><div class="chart-box" id="d-industryChart"></div></div>
+      </div>
+
+      <!-- Holdings table -->
+      <div class="card">
+        <div class="card-title">📋 当前持仓明细</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>代码</th><th>名称</th><th>类型</th><th>持仓数量</th>
+                <th>当前价(元)</th><th>收益(元)</th><th>收益率(%)</th><th>市值(元)</th>
+              </tr>
+            </thead>
+            <tbody id="d-holdings"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ ASSESSMENT ══ -->
+    <section id="view-assessment" class="view">
+      <header class="page-topbar">
+        <img src="alphamind_logo.png" alt="AlphaMind Logo" />
+        <div class="brand">
+          <h1>AlphaMind 投资人格评测</h1>
+          <p>填写问卷 → 大模型分析 → 自动切换结果页</p>
+        </div>
+        <span class="pill">Web v1.2.0</span>
+      </header>
+
+      <div class="assess-grid">
+        <section class="card">
+          <h2 style="font-size:15px;color:var(--accent-dark);margin-bottom:6px;">📝 评测问卷</h2>
+          <small style="font-size:12px;color:var(--text-muted);">选择最符合你当前情况的选项，系统将生成风险类型、雷达画像与资产建议。</small>
+
+          <div class="section-title">基础信息</div>
+          <div class="row">
+            <label for="a_userId">用户标识（可选）</label>
+            <div>
+              <input id="a_userId" type="text" value="guest" />
+              <div class="hint">用于后端日志追踪，不填写也可以。</div>
             </div>
           </div>
+
+          <div class="section-title">问卷问题</div>
+          <div id="a_questions"></div>
+
+          <div class="actions">
+            <button id="a_btnSubmit" type="button" class="btn btn-primary" onclick="submitToAI()">
+              <span class="spinner"></span>
+              ⚡ 开始分析并查看结果
+            </button>
+            <button type="button" class="btn btn-ghost" onclick="resetAssessForm()">重置</button>
+            <span id="a_statusText" class="status-txt">就绪</span>
+          </div>
+
+          <details>
+            <summary>高级（仅调试用）：查看生成的提示词</summary>
+            <div class="hint">默认收起，不影响收件人阅读。</div>
+            <pre id="a_promptPreview" class="codebox">（提交后生成）</pre>
+          </details>
+          <div class="footer-note">说明：页面已隐藏 API 配置，默认对接线上环境。</div>
+        </section>
+
+        <aside class="card">
+          <h2 style="font-size:15px;color:var(--accent-dark);margin-bottom:6px;">📌 你将获得的内容</h2>
+          <small style="font-size:12px;color:var(--text-muted);">提交后切换到结果页，结果页可直接截图/转发。</small>
+          <div class="steps">
+            <div class="step"><div class="k">输出 1</div><div class="v">风险类型（四档）</div></div>
+            <div class="step"><div class="k">输出 2</div><div class="v">风险分数（0-100）</div></div>
+            <div class="step"><div class="k">输出 3</div><div class="v">雷达画像 + 配置建议</div></div>
+          </div>
+          <div class="mini"><div class="hint" style="margin:0">结果页新增：市场观点（多角色）/ 产品对比雷达图 / 近7日走势。</div></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ══ RESULT ══ -->
+    <section id="view-result" class="view">
+      <header class="page-topbar">
+        <img src="alphamind_logo.png" alt="AlphaMind Logo" />
+        <div class="brand">
+          <h1>AlphaMind 评测结果</h1>
+          <p>直接与他人分享（报告版）。</p>
         </div>
-      </section>
+        <span class="ts-pill" id="r_tsPill">-</span>
+      </header>
 
-      <section class="card two" id="r_detailCard" style="display:none;">
-        <div>
-          <div class="k" style="font-weight:950;color:var(--brand);margin-bottom:8px;">画像雷达</div>
-          <div id="radarUser"></div>
+      <div class="result-gap">
+        <div class="empty" id="r_emptyState" style="display:none;">
+          没有找到评测结果。请先在问卷页完成评测后再查看结果。
+          <div class="actions" style="margin-top:12px;">
+            <button class="btn btn-primary" onclick="nav('assessment')">前往评测</button>
+          </div>
         </div>
-        <div>
-          <div class="k" style="font-weight:950;color:var(--brand);margin-bottom:8px;">资产建议</div>
-          <div id="r_suggestions"></div>
+
+        <section class="card" id="r_resultCard" style="display:none;">
+          <div class="headline">
+            <div class="risk-badge">
+              <div class="k">风险类型</div>
+              <div class="v" id="r_riskType">-</div>
+              <div class="k">风险分数</div>
+              <div class="score"><span id="r_riskScore">-</span> / 100</div>
+              <div class="k" style="margin-top:6px;">用户评分（user_score）</div>
+              <div class="v" style="font-size:14px;" id="r_userScore">-</div>
+            </div>
+            <div class="desc">
+              <div style="font-size:11px;color:var(--text-muted);">简评</div>
+              <div id="r_riskDesc" style="margin-top:6px;">-</div>
+              <div class="actions">
+                <button class="btn btn-primary" onclick="copySummary()">复制结论</button>
+                <button class="btn btn-ghost" onclick="downloadJSON()">导出 JSON</button>
+                <button class="btn btn-ghost" onclick="nav('assessment')">重新评测</button>
+                <button class="btn btn-ghost" onclick="nav('survey')">参与使用后问卷</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card two" id="r_detailCard" style="display:none;">
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--accent-dark);margin-bottom:8px;">画像雷达</div>
+            <div id="radarUser"></div>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--accent-dark);margin-bottom:8px;">资产建议</div>
+            <div id="r_suggestions"></div>
+          </div>
+        </section>
+
+        <section class="card three" id="r_chartsCard" style="display:none;">
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--accent-dark);margin-bottom:8px;">产品能力对比</div>
+            <div id="radarCompare"></div>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--accent-dark);margin-bottom:8px;">近 7 日走势（示例）</div>
+            <div id="priceChart"></div>
+          </div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--accent-dark);margin-bottom:8px;">市场观点（多角色）</div>
+            <div class="role-grid" id="r_roles"></div>
+          </div>
+        </section>
+
+        <details id="r_debugBox" style="display:none;">
+          <summary>高级（仅调试用）：查看原始返回与提示词</summary>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:10px;">提示词（q_text）</div>
+          <pre class="mono" id="r_promptBox">-</pre>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:10px;">后端原始返回</div>
+          <pre class="mono" id="r_rawBox">-</pre>
+        </details>
+      </div>
+    </section>
+
+    <!-- ══ SURVEY ══ -->
+    <section id="view-survey" class="view">
+      <header class="page-topbar">
+        <img src="alphamind_logo.png" alt="AlphaMind Logo" />
+        <div class="brand">
+          <h1>AlphaMind 使用后问卷调查</h1>
+          <p>了解您的使用感受与后续意愿（匿名）。预计 3–5 分钟。</p>
         </div>
-      </section>
+        <span class="pill">Survey</span>
+      </header>
 
-      <section class="card three" id="r_chartsCard" style="display:none;">
-        <div>
-          <div class="k" style="font-weight:950;color:var(--brand);margin-bottom:8px;">产品能力对比</div>
-          <div id="radarCompare"></div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="section-title" style="margin-top:0;">填写进度</div>
+        <div class="bar"><div id="s_progressFill"></div></div>
+        <div class="hint" style="margin-top:8px">1=非常不同意，5=非常同意。开放题可选填。</div>
+      </div>
+
+      <form id="surveyForm" class="card" onsubmit="event.preventDefault();submitSurvey();">
+        <div class="section-title">第一部分：基本信息</div>
+        <div class="row">
+          <label>性别</label>
+          <select name="gender" required>
+            <option value="" selected disabled>请选择</option>
+            <option value="male">男</option><option value="female">女</option><option value="other">其他</option>
+          </select>
         </div>
-        <div>
-          <div class="k" style="font-weight:950;color:var(--brand);margin-bottom:8px;">近 7 日走势（示例）</div>
-          <div id="priceChart"></div>
+        <div class="row">
+          <label>年龄</label>
+          <select name="age_group" required>
+            <option value="" selected disabled>请选择</option>
+            <option value="18-25">18–25岁</option><option value="26-35">26–35岁</option>
+            <option value="36-45">36–45岁</option><option value="46-55">46–55岁</option><option value="56+">56岁及以上</option>
+          </select>
         </div>
-        <div>
-          <div class="k" style="font-weight:950;color:var(--brand);margin-bottom:8px;">市场观点（多角色）</div>
-          <div class="role-grid" id="r_roles"></div>
+        <div class="row">
+          <label>教育背景</label>
+          <select name="education" required>
+            <option value="" selected disabled>请选择</option>
+            <option value="hs_or_below">高中/中专及以下</option><option value="college">专科</option>
+            <option value="bachelor">本科</option><option value="master">硕士</option>
+            <option value="phd">博士</option><option value="other">其他</option>
+          </select>
         </div>
-      </section>
+        <div class="row">
+          <label>职业领域</label>
+          <select name="profession" required>
+            <option value="" selected disabled>请选择</option>
+            <option value="finance">金融业</option><option value="tech">科技与互联网</option>
+            <option value="academia">学术界与科研</option><option value="public">公共服务</option>
+            <option value="ops">企业运营与管理</option><option value="freelance">自由职业/创业</option>
+            <option value="student">学生</option><option value="other">其他</option>
+          </select>
+        </div>
+        <div class="row">
+          <label>投资经验</label>
+          <select name="invest_exp" required>
+            <option value="" selected disabled>请选择</option>
+            <option value="<1">少于1年</option><option value="1-3">1–3年</option>
+            <option value="3-5">3–5年</option><option value="5+">5年以上</option>
+          </select>
+        </div>
+        <div class="row">
+          <label>是否使用过智能投顾/理财工具</label>
+          <select name="used_robo" required>
+            <option value="" selected disabled>请选择</option>
+            <option value="yes">是</option><option value="no">否</option>
+          </select>
+        </div>
 
-      <details id="r_debugBox" style="display:none;">
-        <summary>高级（仅调试用）：查看原始返回与提示词</summary>
-        <div class="k" style="margin-top:10px;">提示词（q_text）</div>
-        <pre class="mono" id="r_promptBox">-</pre>
-        <div class="k" style="margin-top:10px;">后端原始返回</div>
-        <pre class="mono" id="r_rawBox">-</pre>
-      </details>
-    </div>
-  </section>
+        <div class="section-title">第二部分：对 AlphaMind 系统功能的认知与评价（1–5 分）</div>
+        <div id="s_likertArea"></div>
 
-  <!-- ── SURVEY ── -->
-  <section id="view-survey" class="view">
-    <header class="page-topbar">
-      <img style="width:42px;height:42px;border-radius:10px;" src="alphamind_logo.png" alt="AlphaMind Logo" />
-      <div class="brand">
-        <h1>AlphaMind 使用后问卷调查</h1>
-        <p>了解您的使用感受与后续意愿（匿名）。预计 3–5 分钟。</p>
-      </div>
-      <span class="pill">Survey</span>
-    </header>
+        <div class="section-title">第三部分：开放性问题（选答）</div>
+        <div class="row"><label>1) 您认为 AlphaMind 系统最吸引您的功能是什么？为什么？</label><textarea name="open_attract" placeholder="可选填"></textarea></div>
+        <div class="row"><label>2) 您对该系统在隐私保护、合规性方面还有哪些建议？</label><textarea name="open_privacy" placeholder="可选填"></textarea></div>
+        <div class="row"><label>3) 您是否愿意为使用此类高级智能投顾服务支付一定费用？请说明理由。</label><textarea name="open_pay" placeholder="可选填"></textarea></div>
 
-    <div class="card" style="margin-bottom:16px;">
-      <div class="section-title">填写进度</div>
-      <div class="bar"><div id="s_progressFill"></div></div>
-      <div class="hint" style="margin-top:8px">1=非常不同意，5=非常同意。开放题可选填。</div>
-    </div>
+        <div class="section-title">第四部分：可选联系方式（用于回访）</div>
+        <div class="row"><label>邮箱（可选）</label><input name="contact_email" type="text" placeholder="可选填" /></div>
+        <div class="row"><label>电话（可选）</label><input name="contact_phone" type="text" placeholder="可选填" /></div>
 
-    <form id="surveyForm" class="card" onsubmit="event.preventDefault();submitSurvey();">
-      <div class="section-title">第一部分：基本信息</div>
+        <div class="actions">
+          <button class="btn btn-primary" type="submit">提交问卷</button>
+          <button class="btn btn-ghost" type="button" onclick="nav('result')">返回结果页</button>
+          <button class="btn btn-ghost" type="button" onclick="nav('admin')">管理员入口</button>
+          <span class="status-txt" id="s_statusText">您的答卷将仅对管理员可见</span>
+        </div>
+        <div class="footer-note">注：本页面为前端演示版，数据默认存储在浏览器本地（localStorage）。</div>
+      </form>
+    </section>
 
-      <div class="row">
-        <label>性别</label>
-        <select name="gender" required>
-          <option value="" selected disabled>请选择</option>
-          <option value="male">男</option>
-          <option value="female">女</option>
-          <option value="other">其他</option>
-        </select>
+    <!-- ══ ADMIN ══ -->
+    <section id="view-admin" class="view">
+      <header class="page-topbar">
+        <img src="alphamind_logo.png" alt="AlphaMind Logo" />
+        <div class="brand">
+          <h1>管理员登录</h1>
+          <p>仅管理员可查看问卷结果</p>
+        </div>
+      </header>
+      <div class="card" style="max-width:480px;">
+        <div class="admin-row"><label for="ad_u">账号</label><input id="ad_u" type="text" placeholder="请输入账号" /></div>
+        <div class="admin-row"><label for="ad_p">密码</label><input id="ad_p" type="password" placeholder="请输入密码" /></div>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="adminLogin()">登录</button>
+          <button class="btn btn-ghost" onclick="nav('survey')">返回问卷</button>
+          <button class="btn btn-ghost" onclick="nav('result')">返回结果页</button>
+        </div>
+        <div class="hint" style="margin-top:14px;">提示：当前为前端演示版登录。若部署到公网，请改为后端鉴权（避免账号被从源码中读取）。</div>
       </div>
-      <div class="row">
-        <label>年龄</label>
-        <select name="age_group" required>
-          <option value="" selected disabled>请选择</option>
-          <option value="18-25">18–25岁</option>
-          <option value="26-35">26–35岁</option>
-          <option value="36-45">36–45岁</option>
-          <option value="46-55">46–55岁</option>
-          <option value="56+">56岁及以上</option>
-        </select>
-      </div>
-      <div class="row">
-        <label>教育背景</label>
-        <select name="education" required>
-          <option value="" selected disabled>请选择</option>
-          <option value="hs_or_below">高中/中专及以下</option>
-          <option value="college">专科</option>
-          <option value="bachelor">本科</option>
-          <option value="master">硕士</option>
-          <option value="phd">博士</option>
-          <option value="other">其他</option>
-        </select>
-      </div>
-      <div class="row">
-        <label>职业领域</label>
-        <select name="profession" required>
-          <option value="" selected disabled>请选择</option>
-          <option value="finance">金融业</option>
-          <option value="tech">科技与互联网</option>
-          <option value="academia">学术界与科研</option>
-          <option value="public">公共服务</option>
-          <option value="ops">企业运营与管理</option>
-          <option value="freelance">自由职业/创业</option>
-          <option value="student">学生</option>
-          <option value="other">其他</option>
-        </select>
-      </div>
-      <div class="row">
-        <label>投资经验</label>
-        <select name="invest_exp" required>
-          <option value="" selected disabled>请选择</option>
-          <option value="<1">少于1年</option>
-          <option value="1-3">1–3年</option>
-          <option value="3-5">3–5年</option>
-          <option value="5+">5年以上</option>
-        </select>
-      </div>
-      <div class="row">
-        <label>是否使用过智能投顾/理财工具</label>
-        <select name="used_robo" required>
-          <option value="" selected disabled>请选择</option>
-          <option value="yes">是</option>
-          <option value="no">否</option>
-        </select>
-      </div>
+    </section>
 
-      <div class="section-title">第二部分：对 AlphaMind 系统功能的认知与评价（1–5 分）</div>
-      <div id="s_likertArea"></div>
-
-      <div class="section-title">第三部分：开放性问题（选答）</div>
-      <div class="row">
-        <label>1) 您认为 AlphaMind 系统最吸引您的功能是什么？为什么？</label>
-        <textarea name="open_attract" placeholder="可选填"></textarea>
-      </div>
-      <div class="row">
-        <label>2) 您对该系统在隐私保护、合规性方面还有哪些建议？</label>
-        <textarea name="open_privacy" placeholder="可选填"></textarea>
-      </div>
-      <div class="row">
-        <label>3) 您是否愿意为使用此类高级智能投顾服务支付一定费用？请说明理由。</label>
-        <textarea name="open_pay" placeholder="可选填"></textarea>
-      </div>
-
-      <div class="section-title">第四部分：可选联系方式（用于回访）</div>
-      <div class="row">
-        <label>邮箱（可选）</label>
-        <input name="contact_email" type="text" placeholder="可选填" />
-      </div>
-      <div class="row">
-        <label>电话（可选）</label>
-        <input name="contact_phone" type="text" placeholder="可选填" />
-      </div>
-
-      <div class="actions">
-        <button class="btn btn-primary" type="submit">提交问卷</button>
-        <button class="btn btn-ghost" type="button" onclick="nav('result')">返回结果页</button>
-        <button class="btn btn-ghost" type="button" onclick="nav('admin')">管理员入口</button>
-        <span class="status" id="s_statusText">您的答卷将仅对管理员可见</span>
-      </div>
-      <div class="footer-note">注：本页面为前端演示版，数据默认存储在浏览器本地（localStorage）。</div>
-    </form>
-  </section>
-
-  <!-- ── ADMIN ── -->
-  <section id="view-admin" class="view">
-    <header class="page-topbar">
-      <img style="width:42px;height:42px;border-radius:10px;" src="alphamind_logo.png" alt="AlphaMind Logo" />
-      <div class="brand">
-        <h1>管理员登录</h1>
-        <p>仅管理员可查看问卷结果</p>
-      </div>
-    </header>
-
-    <div class="card admin-card" style="max-width:480px;">
-      <div class="admin-input-row">
-        <label for="ad_u">账号</label>
-        <input id="ad_u" type="text" placeholder="请输入账号" />
-      </div>
-      <div class="admin-input-row">
-        <label for="ad_p">密码</label>
-        <input id="ad_p" type="password" placeholder="请输入密码" />
-      </div>
-      <div class="actions">
-        <button class="btn btn-primary" onclick="adminLogin()">登录</button>
-        <button class="btn btn-ghost" onclick="nav('survey')">返回问卷</button>
-        <button class="btn btn-ghost" onclick="nav('result')">返回结果页</button>
-      </div>
-      <div class="hint" style="margin-top:14px;">
-        提示：当前为前端演示版登录。若部署到公网，请改为后端鉴权（避免账号被从源码中读取）。
-      </div>
-    </div>
-  </section>
-
+  </div><!-- #content -->
 </div><!-- #main -->
 
-<!-- Survey Modal -->
+<!-- Survey done modal -->
 <div class="modal" id="s_doneModal">
   <div class="box">
-    <h3>感谢您的参与！</h3>
+    <h3>🎉 感谢您的参与！</h3>
     <div class="hint" id="s_doneText">已收到您的答卷。</div>
     <div class="actions" style="margin-top:12px">
       <button class="btn btn-primary" onclick="nav('result');closeSurveyModal()">返回结果页</button>
@@ -823,68 +781,213 @@
 </div>
 
 <script>
-/* ═══════════════════════════════════════════
-   NAVIGATION / SPA ROUTING
-═══════════════════════════════════════════ */
-const VIEWS = ['home','assessment','result','survey','admin'];
+/* ════════════════════════════════════════
+   CONSTANTS
+════════════════════════════════════════ */
+const API_BASE          = "http://111.230.52.99:8000";
+const ASSESS_KEY        = "alphamind_assessment_latest";
+const SURVEY_STORAGE_KEY = "alphamind_survey_responses_v1";
+const ADMIN_USER        = "alphamind001";
+const ADMIN_PASS        = "dafengqixiyunfeiyang";
+const ADMIN_TOKEN_KEY   = "alphamind_admin_token_v1";
 
-function nav(viewId, closeMobileMenu) {
-  if (!VIEWS.includes(viewId)) viewId = 'home';
-  // update views
+const VIEW_LABELS = {
+  dashboard:  "仪表盘",
+  assessment: "智能投顾分析",
+  result:     "评测结果",
+  survey:     "使用问卷",
+  admin:      "管理员登录"
+};
+const VALID_VIEWS = Object.keys(VIEW_LABELS);
+
+/* ════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════ */
+function nav(viewId, closeMobile) {
+  if (!VALID_VIEWS.includes(viewId)) viewId = 'dashboard';
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   const target = document.getElementById('view-' + viewId);
   if (target) target.classList.add('active');
-  // update nav items
   document.querySelectorAll('.nav-item').forEach(el => {
     el.classList.toggle('active', el.dataset.view === viewId);
   });
-  // update hash
   history.replaceState(null, '', '#' + viewId);
-  // close mobile menu if needed
-  if (closeMobileMenu) {
-    document.getElementById('mobile-menu').classList.remove('open');
-    document.getElementById('hamburger').classList.remove('open');
-  }
-  // if switching to result, reload result data and resize charts
+  document.getElementById('bc-current').textContent = VIEW_LABELS[viewId] || viewId;
+  if (viewId === 'dashboard') initDashboard();
   if (viewId === 'result') {
     loadResultData();
     setTimeout(() => {
-      radarUser && radarUser.resize();
+      radarUser   && radarUser.resize();
       radarCompare && radarCompare.resize();
-      priceChart && priceChart.resize();
-    }, 50);
+      priceChart  && priceChart.resize();
+    }, 60);
   }
-  // scroll to top
+  closeSidebar();
   window.scrollTo(0, 0);
 }
 
-function toggleMobileMenu() {
-  const menu = document.getElementById('mobile-menu');
-  const hb = document.getElementById('hamburger');
-  menu.classList.toggle('open');
-  hb.classList.toggle('open');
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('mobile-open');
+  document.getElementById('sb-overlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('sb-overlay').classList.remove('show');
 }
 
-// Hash routing on load
-window.addEventListener('DOMContentLoaded', () => {
-  const hash = location.hash.replace('#', '') || 'home';
-  nav(VIEWS.includes(hash) ? hash : 'home');
-});
-window.addEventListener('hashchange', () => {
-  const hash = location.hash.replace('#', '') || 'home';
-  nav(VIEWS.includes(hash) ? hash : 'home');
-});
-window.addEventListener('resize', () => {
-  radarUser && radarUser.resize();
-  radarCompare && radarCompare.resize();
-  priceChart && priceChart.resize();
-});
+/* ════════════════════════════════════════
+   CLOCK
+════════════════════════════════════════ */
+function updateClock() {
+  const s = new Date().toLocaleString('zh-CN', {
+    year:'numeric', month:'2-digit', day:'2-digit',
+    hour:'2-digit', minute:'2-digit', second:'2-digit'
+  });
+  const t1 = document.getElementById('tb-time');
+  const t2 = document.getElementById('dash-time');
+  if (t1) t1.textContent = s;
+  if (t2) t2.textContent = s;
+}
+setInterval(updateClock, 1000);
+updateClock();
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════
+   DASHBOARD
+════════════════════════════════════════ */
+let dashInited = false;
+let dashCharts = {};
+
+function initDashboard() {
+  // Try to load risk data from assessment result
+  const raw = localStorage.getItem(ASSESS_KEY);
+  if (raw) {
+    try {
+      const p = JSON.parse(raw);
+      const r = p.result;
+      if (r) {
+        const el = document.getElementById('d-riskType');
+        if (el) el.textContent = r.risk_type || '稳健型(中等风险)';
+        const sc = parseInt(r.score, 10);
+        if (!isNaN(sc)) {
+          document.getElementById('d-riskScore').textContent = '评分 ' + sc + '分';
+          document.getElementById('d-riskPct').textContent   = sc + '%';
+          document.getElementById('d-riskBar').style.width   = sc + '%';
+        }
+      }
+    } catch(e) {}
+  }
+  if (!dashInited) {
+    dashInited = true;
+    setTimeout(() => {
+      initAssetChart();
+      initTrendChart();
+      initIndustryChart();
+      renderHoldings();
+    }, 50);
+  }
+}
+
+function initAssetChart() {
+  const el = document.getElementById('d-assetChart');
+  if (!el) return;
+  if (!dashCharts.asset) dashCharts.asset = echarts.init(el);
+  dashCharts.asset.setOption({
+    tooltip: { trigger:'item', formatter:'{b}: {d}%' },
+    legend:  { bottom:0, textStyle:{ fontSize:11 } },
+    series: [{
+      type: 'pie', radius: ['38%','68%'], center: ['50%','44%'],
+      data: [
+        { value:42, name:'股票' },
+        { value:28, name:'基金' },
+        { value:20, name:'债券' },
+        { value:10, name:'其他金融产品' }
+      ],
+      itemStyle: { borderRadius:4, borderWidth:2, borderColor:'#fff' },
+      label: { show:false }
+    }]
+  });
+}
+
+function initTrendChart() {
+  const el = document.getElementById('d-trendChart');
+  if (!el) return;
+  if (!dashCharts.trend) dashCharts.trend = echarts.init(el);
+  const dates = [], prices = [];
+  const base = 40000, now = new Date();
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(now); d.setDate(d.getDate() - i);
+    dates.push((d.getMonth()+1) + '/' + d.getDate());
+    prices.push(+(base + Math.sin(i * 0.3) * 3000 + (i * 220) + Math.random() * 800).toFixed(2));
+  }
+  dashCharts.trend.setOption({
+    tooltip: { trigger:'axis', formatter: p => p[0].axisValue + '<br/>收益：' + (+p[0].value).toLocaleString() + '元' },
+    grid:    { top:10, right:10, bottom:30, left:62 },
+    xAxis:   { type:'category', data:dates, axisLabel:{ fontSize:10, interval:4 } },
+    yAxis:   { type:'value', axisLabel:{ fontSize:10, formatter: v => (v/1000).toFixed(0) + 'k' } },
+    series: [{
+      type:'line', data:prices, smooth:true,
+      areaStyle:{ color:{ type:'linear', x:0, y:0, x2:0, y2:1,
+        colorStops:[{ offset:0, color:'rgba(74,144,217,.38)' },{ offset:1, color:'rgba(74,144,217,.02)' }] } },
+      lineStyle:{ color:'#4a90d9', width:2 },
+      symbol:'none'
+    }]
+  });
+}
+
+function initIndustryChart() {
+  const el = document.getElementById('d-industryChart');
+  if (!el) return;
+  if (!dashCharts.industry) dashCharts.industry = echarts.init(el);
+  dashCharts.industry.setOption({
+    tooltip: { trigger:'axis', axisPointer:{ type:'shadow' } },
+    grid:    { top:10, right:10, bottom:52, left:50 },
+    xAxis: { type:'category', data:['科技','金融','消费','医疗','能源','工业'], axisLabel:{ fontSize:11, rotate:30 } },
+    yAxis: { type:'value', axisLabel:{ fontSize:10, formatter:'{value}%' } },
+    series: [{
+      type:'bar', barMaxWidth:38, borderRadius:[4,4,0,0],
+      data:[
+        { value:28, itemStyle:{ color:'#4a90d9' } },
+        { value:22, itemStyle:{ color:'#52c41a' } },
+        { value:18, itemStyle:{ color:'#fa8c16' } },
+        { value:14, itemStyle:{ color:'#eb2f96' } },
+        { value:10, itemStyle:{ color:'#722ed1' } },
+        { value: 8, itemStyle:{ color:'#13c2c2' } }
+      ]
+    }]
+  });
+}
+
+function renderHoldings() {
+  const rows = [
+    { code:'600519', name:'贵州茅台',     type:'股票', qty:100,   price:1680.00, profit:12800,  pct: 8.24, market:168000 },
+    { code:'000001', name:'平安银行',     type:'股票', qty:2000,  price:11.52,   profit:-1200,  pct:-4.95, market:23040  },
+    { code:'161725', name:'招商双债增强', type:'基金', qty:5000,  price:1.2356,  profit:3200,   pct: 5.46, market:6178   },
+    { code:'012345', name:'国债ETF',      type:'债券', qty:10000, price:103.56,  profit:860,    pct: 0.84, market:103560 },
+    { code:'518880', name:'黄金ETF',      type:'其他', qty:3000,  price:5.234,   profit:2100,   pct:15.37, market:15702  },
+  ];
+  const tbody = document.getElementById('d-holdings');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  rows.forEach(h => {
+    const cls  = h.profit >= 0 ? 'profit' : 'loss';
+    const sign = h.profit >= 0 ? '+' : '';
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      `<td><b>${escapeHtml(h.code)}</b></td>` +
+      `<td>${escapeHtml(h.name)}</td>` +
+      `<td>${escapeHtml(h.type)}</td>` +
+      `<td>${h.qty.toLocaleString()}</td>` +
+      `<td>${h.price.toFixed(2)}</td>` +
+      `<td class="${cls}">${sign}${h.profit.toLocaleString()}</td>` +
+      `<td class="${cls}">${sign}${h.pct.toFixed(2)}%</td>` +
+      `<td>${h.market.toLocaleString()}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ════════════════════════════════════════
    ASSESSMENT
-═══════════════════════════════════════════ */
-const API_BASE = "http://111.230.52.99:8000";
-
+════════════════════════════════════════ */
 const promptTemplate = `
 你是一位资深私人银行财富顾问。请根据用户的问卷回答，分析其投资人格。
 候选风格库：
@@ -912,38 +1015,38 @@ const promptTemplate = `
 
 const questions = [
   { field:"investment_experience", title:"投资经验有哪些？", options:[
-    {label:"无经验", value:"none"},{label:"仅存款国债", value:"deposit"},{label:"基金/股票/黄金", value:"stocks"}]},
+    {label:"无经验",value:"none"},{label:"仅存款国债",value:"deposit"},{label:"基金/股票/黄金",value:"stocks"}]},
   { field:"job_status", title:"您的工作状态？", options:[
-    {label:"固定职业", value:"stable"},{label:"无固定职业", value:"freelance"},{label:"学生/退休", value:"retired"}]},
+    {label:"固定职业",value:"stable"},{label:"无固定职业",value:"freelance"},{label:"学生/退休",value:"retired"}]},
   { field:"income_source", title:"收入主要来自？", options:[
-    {label:"工资薪金", value:"salary"},{label:"生产经营", value:"business"},{label:"其他", value:"other"}]},
+    {label:"工资薪金",value:"salary"},{label:"生产经营",value:"business"},{label:"其他",value:"other"}]},
   { field:"annual_income", title:"家庭可支配年收入？", options:[
-    {label:"5万及以下", value:"low"},{label:"5-20万", value:"medium"},{label:"20-50万", value:"high"},{label:"50万以上", value:"ultra"}]},
+    {label:"5万及以下",value:"low"},{label:"5-20万",value:"medium"},{label:"20-50万",value:"high"},{label:"50万以上",value:"ultra"}]},
   { field:"invest_amount", title:"家庭收入有多少钱用于投资？", options:[
-    {label:"1万以下", value:"amt_low"},{label:"1-5万", value:"amt_mid"},{label:"5-20万", value:"amt_high"},{label:"20万以上", value:"amt_ultra"}]},
+    {label:"1万以下",value:"amt_low"},{label:"1-5万",value:"amt_mid"},{label:"5-20万",value:"amt_high"},{label:"20万以上",value:"amt_ultra"}]},
   { field:"monthly_expense", title:"每月钱花哪了？", options:[
-    {label:"基本生活", value:"living"},{label:"还房贷/车贷", value:"loan"},{label:"还信用卡/消费贷", value:"credit"}]},
+    {label:"基本生活",value:"living"},{label:"还房贷/车贷",value:"loan"},{label:"还信用卡/消费贷",value:"credit"}]},
   { field:"invest_duration", title:"可接受的最长投资期限？", options:[
-    {label:"1年以内", value:"short"},{label:"1-3年", value:"mid"},{label:"3年以上", value:"long"}]},
+    {label:"1年以内",value:"short"},{label:"1-3年",value:"mid"},{label:"3年以上",value:"long"}]},
   { field:"risk_tolerance", title:"能承受的最大损失？", options:[
-    {label:"1%以内", value:"risk_1"},{label:"5%以内", value:"risk_5"},{label:"10%以内", value:"risk_10"},{label:"20%以上", value:"risk_20"}]},
+    {label:"1%以内",value:"risk_1"},{label:"5%以内",value:"risk_5"},{label:"10%以内",value:"risk_10"},{label:"20%以上",value:"risk_20"}]},
   { field:"invest_goal", title:"投资目标是？", options:[
-    {label:"资产保值", value:"save"},{label:"稳健增值", value:"growth"},{label:"大幅增长", value:"aggressive"}]},
+    {label:"资产保值",value:"save"},{label:"稳健增值",value:"growth"},{label:"大幅增长",value:"aggressive"}]},
 ];
 
 function renderQuestions() {
-  const root = document.getElementById("a_questions");
-  root.innerHTML = "";
+  const root = document.getElementById('a_questions');
+  root.innerHTML = '';
   questions.forEach((q, idx) => {
-    const row = document.createElement("div"); row.className = "row";
-    const label = document.createElement("label");
-    label.setAttribute("for", "a_" + q.field);
+    const row   = document.createElement('div'); row.className = 'row';
+    const label = document.createElement('label');
+    label.setAttribute('for', 'a_' + q.field);
     label.innerHTML = `${idx+1}. ${q.title}`;
-    const wrap = document.createElement("div");
-    const sel = document.createElement("select"); sel.id = "a_" + q.field; sel.name = q.field;
-    q.options.forEach(opt => { const o = document.createElement("option"); o.value = opt.value; o.textContent = opt.label; sel.appendChild(o); });
+    const wrap = document.createElement('div');
+    const sel  = document.createElement('select'); sel.id = 'a_' + q.field; sel.name = q.field;
+    q.options.forEach(opt => { const o = document.createElement('option'); o.value = opt.value; o.textContent = opt.label; sel.appendChild(o); });
     wrap.appendChild(sel);
-    const hint = document.createElement("div"); hint.className = "hint"; hint.textContent = "请选择最符合当前情况的一项。";
+    const hint = document.createElement('div'); hint.className = 'hint'; hint.textContent = '请选择最符合当前情况的一项。';
     wrap.appendChild(hint);
     row.appendChild(label); row.appendChild(wrap);
     root.appendChild(row);
@@ -952,7 +1055,7 @@ function renderQuestions() {
 
 function getAnswers() {
   const ans = {};
-  questions.forEach(q => { ans[q.field] = document.getElementById("a_" + q.field).value; });
+  questions.forEach(q => { ans[q.field] = document.getElementById('a_' + q.field).value; });
   return ans;
 }
 
@@ -963,71 +1066,66 @@ function translateAnswers(answers) {
     const opt = q.options.find(o => o.value === v);
     if (opt) lines.push(`${q.title}：${opt.label}`);
   });
-  return lines.join("\n");
+  return lines.join('\n');
 }
 
 function buildFinalPrompt() {
   const answers = getAnswers();
-  const userDesc = translateAnswers(answers);
-  return promptTemplate.replace("{{USER_DATA}}", userDesc);
+  return promptTemplate.replace('{{USER_DATA}}', translateAnswers(answers));
 }
 
 function setAssessLoading(isLoading, msg) {
-  const btn = document.getElementById("a_btnSubmit");
-  const st = document.getElementById("a_statusText");
-  if (isLoading) btn.classList.add("loading"); else btn.classList.remove("loading");
+  const btn = document.getElementById('a_btnSubmit');
+  const st  = document.getElementById('a_statusText');
+  if (isLoading) btn.classList.add('loading'); else btn.classList.remove('loading');
   btn.disabled = isLoading;
-  st.textContent = msg || (isLoading ? "请求中..." : "就绪");
+  st.textContent = msg || (isLoading ? '请求中...' : '就绪');
 }
 
 async function submitToAI() {
-  const userId = (document.getElementById("a_userId").value.trim() || "guest");
+  const userId = (document.getElementById('a_userId').value.trim() || 'guest');
   const finalPrompt = buildFinalPrompt();
-  document.getElementById("a_promptPreview").textContent = finalPrompt;
+  document.getElementById('a_promptPreview').textContent = finalPrompt;
 
-  setAssessLoading(true, "分析中…");
+  setAssessLoading(true, '分析中…');
   try {
     const resp = await fetch(`${API_BASE}/api/analyze`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id: userId, symbol: "PORTFOLIO", q_text: finalPrompt })
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: userId, symbol: 'PORTFOLIO', q_text: finalPrompt })
     });
     const json = await resp.json();
 
-    const rawText = (json?.data?.advice || "").toString();
+    const rawText = (json?.data?.advice || '').toString();
     let aiResult = null;
-    const fo = rawText.indexOf("{");
-    const lc = rawText.lastIndexOf("}");
+    const fo = rawText.indexOf('{'), lc = rawText.lastIndexOf('}');
     if (fo !== -1 && lc !== -1 && lc > fo) {
-      try { aiResult = JSON.parse(rawText.substring(fo, lc+1)); } catch(e) { aiResult = null; }
+      try { aiResult = JSON.parse(rawText.substring(fo, lc+1)); } catch(e) {}
     }
 
     const payload = {
       meta: { apiBase: API_BASE, userId, ts: new Date().toISOString() },
-      answers: getAnswers(),
-      prompt: finalPrompt,
-      raw: json,
-      result: aiResult
+      answers: getAnswers(), prompt: finalPrompt, raw: json, result: aiResult
     };
-    localStorage.setItem("alphamind_assessment_latest", JSON.stringify(payload));
-    setAssessLoading(false, "分析完成 ✓");
+    localStorage.setItem(ASSESS_KEY, JSON.stringify(payload));
+    setAssessLoading(false, '分析完成 ✓');
     nav('result');
   } catch(e) {
-    setAssessLoading(false, "失败 ❌");
-    alert("请求失败：\n" + (e.message || e));
+    setAssessLoading(false, '失败 ❌');
+    alert('请求失败：\n' + (e.message || e));
   }
 }
 
 function resetAssessForm() {
-  questions.forEach(q => { const sel = document.getElementById("a_" + q.field); if (sel) sel.selectedIndex = 0; });
-  document.getElementById("a_userId").value = "guest";
-  document.getElementById("a_statusText").textContent = "就绪";
-  document.getElementById("a_promptPreview").textContent = "（提交后生成）";
+  questions.forEach(q => { const s = document.getElementById('a_' + q.field); if (s) s.selectedIndex = 0; });
+  document.getElementById('a_userId').value = 'guest';
+  document.getElementById('a_statusText').textContent = '就绪';
+  document.getElementById('a_promptPreview').textContent = '（提交后生成）';
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════
    RESULT
-═══════════════════════════════════════════ */
+════════════════════════════════════════ */
 let radarUser = null, radarCompare = null, priceChart = null;
 
 function escapeHtml(s) {
@@ -1035,80 +1133,73 @@ function escapeHtml(s) {
 }
 
 function renderSuggestions(items) {
-  const box = document.getElementById("r_suggestions"); box.innerHTML = "";
-  if (!Array.isArray(items) || items.length === 0) { box.innerHTML = '<div class="k">暂无建议</div>'; return; }
+  const box = document.getElementById('r_suggestions'); box.innerHTML = '';
+  if (!Array.isArray(items) || items.length === 0) { box.innerHTML = '<div style="color:var(--text-muted);font-size:13px;">暂无建议</div>'; return; }
   items.forEach(it => {
-    const div = document.createElement("div");
-    div.className = "suggest-item";
-    div.innerHTML = `<div><div class="name">${escapeHtml(it.name||"-")}</div><div class="desc">${escapeHtml(it.desc||"")}</div></div><div class="pct">${escapeHtml(it.percent||"")}</div>`;
+    const div = document.createElement('div'); div.className = 'suggest-item';
+    div.innerHTML = `<div><div class="name">${escapeHtml(it.name||'-')}</div><div class="desc">${escapeHtml(it.desc||'')}</div></div><div class="pct">${escapeHtml(it.percent||'')}</div>`;
     box.appendChild(div);
   });
 }
 
 function renderUserRadar(values) {
-  const el = document.getElementById("radarUser");
+  const el = document.getElementById('radarUser');
   if (!radarUser) radarUser = echarts.init(el);
   const v = (Array.isArray(values) && values.length === 5) ? values : [0,0,0,0,0];
   radarUser.setOption({
     tooltip: {},
     radar: {
       indicator: [
-        {name:"收益目标",max:100},{name:"投资经验",max:100},{name:"资金实力",max:100},{name:"投资时长",max:100},{name:"风险承受",max:100}
+        {name:'收益目标',max:100},{name:'投资经验',max:100},
+        {name:'资金实力',max:100},{name:'投资时长',max:100},{name:'风险承受',max:100}
       ],
-      splitNumber: 4,
-      axisName: { color: "#2C1A12" }
+      splitNumber: 4, axisName: { color: '#333' }
     },
-    series: [{ type: "radar", data: [{ value: v, name: "用户画像" }] }]
+    series: [{ type:'radar', data:[{ value:v, name:'用户画像' }] }]
   });
 }
 
 function renderCompareRadar(comp) {
-  const el = document.getElementById("radarCompare");
+  const el = document.getElementById('radarCompare');
   if (!radarCompare) radarCompare = echarts.init(el);
   if (!comp || !Array.isArray(comp.indicators) || !Array.isArray(comp.series)) {
-    radarCompare.setOption({ title: { text: "暂无对比数据" } }); return;
+    radarCompare.setOption({ title: { text:'暂无对比数据', left:'center', top:'center' } }); return;
   }
   radarCompare.setOption({
-    tooltip: {},
-    legend: { bottom: 0 },
-    radar: {
-      indicator: comp.indicators.map(x => ({ name: x.name, max: x.max || 10 })),
-      splitNumber: 4,
-      axisName: { color: "#2C1A12" }
-    },
-    series: [{ type: "radar", data: comp.series.map(s => ({ name: s.name, value: s.value })) }]
+    tooltip: {}, legend: { bottom:0 },
+    radar: { indicator: comp.indicators.map(x => ({ name:x.name, max:x.max||10 })), splitNumber:4, axisName:{ color:'#333' } },
+    series: [{ type:'radar', data: comp.series.map(s => ({ name:s.name, value:s.value })) }]
   });
 }
 
 function renderPriceChart(chart) {
-  const el = document.getElementById("priceChart");
+  const el = document.getElementById('priceChart');
   if (!priceChart) priceChart = echarts.init(el);
   if (!chart || !Array.isArray(chart.dates) || !Array.isArray(chart.prices)) {
-    priceChart.setOption({ title: { text: "暂无走势数据" } }); return;
+    priceChart.setOption({ title: { text:'暂无走势数据', left:'center', top:'center' } }); return;
   }
   priceChart.setOption({
-    tooltip: { trigger: "axis" },
-    xAxis: { type: "category", data: chart.dates },
-    yAxis: { type: "value" },
-    series: [{ type: "line", data: chart.prices, smooth: true }]
+    tooltip: { trigger:'axis' },
+    grid:    { top:10, right:10, bottom:30, left:50 },
+    xAxis: { type:'category', data:chart.dates },
+    yAxis: { type:'value' },
+    series: [{ type:'line', data:chart.prices, smooth:true }]
   });
 }
 
 function parseRoleSections(adviceText) {
-  const text = (adviceText || "").toString();
+  const text = (adviceText || '').toString();
   const order = [
-    {key:"基本面分析师", icon:"🕵️‍♂️"},
-    {key:"技术交易员",   icon:"📈"},
-    {key:"首席风控官",  icon:"🛡️"},
-    {key:"核心辩论",    icon:"⚔️"},
-    {key:"最终决策书",  icon:"📝"},
+    {key:'基本面分析师', icon:'🕵️‍♂️'},
+    {key:'技术交易员',   icon:'📈'},
+    {key:'首席风控官',  icon:'🛡️'},
+    {key:'核心辩论',    icon:'⚔️'},
+    {key:'最终决策书',  icon:'📝'},
   ];
-  function findStart(title) {
-    const a = `### ${title.icon} ${title.key}`;
-    const b = `### ${title.key}`;
-    let idx = text.indexOf(a);
-    if (idx === -1) idx = text.indexOf(b);
-    return idx;
+  function findStart(t) {
+    let i = text.indexOf(`### ${t.icon} ${t.key}`);
+    if (i === -1) i = text.indexOf(`### ${t.key}`);
+    return i;
   }
   const sections = [];
   for (let i = 0; i < order.length; i++) {
@@ -1121,67 +1212,63 @@ function parseRoleSections(adviceText) {
       if (nxt !== -1 && nxt > start) { end = Math.min(end, nxt); }
     }
     const block = text.substring(start, end).trim();
-    const lines = block.split("\n");
-    const body = lines.slice(1).join("\n").trim();
-    sections.push({ title: `${cur.icon} ${cur.key}`, text: body || block });
+    const lines = block.split('\n');
+    sections.push({ title:`${cur.icon} ${cur.key}`, text: lines.slice(1).join('\n').trim() || block });
   }
   return sections;
 }
 
 function renderRoles(sections) {
-  const box = document.getElementById("r_roles"); box.innerHTML = "";
+  const box = document.getElementById('r_roles'); box.innerHTML = '';
   if (!sections || sections.length === 0) {
-    box.innerHTML = '<div class="role-card"><div class="title">暂无观点</div><div class="text">本次返回未包含市场观点段落。</div></div>';
-    return;
+    box.innerHTML = '<div class="role-card"><div class="title">暂无观点</div><div class="text">本次返回未包含市场观点段落。</div></div>'; return;
   }
   sections.forEach(s => {
-    const div = document.createElement("div");
-    div.className = "role-card";
+    const div = document.createElement('div'); div.className = 'role-card';
     div.innerHTML = `<div class="title">${escapeHtml(s.title)}</div><div class="text">${escapeHtml(s.text)}</div>`;
     box.appendChild(div);
   });
 }
 
 function loadResultData() {
-  const emptyState = document.getElementById("r_emptyState");
-  const resultCard = document.getElementById("r_resultCard");
-  const detailCard = document.getElementById("r_detailCard");
-  const chartsCard = document.getElementById("r_chartsCard");
-  const debugBox   = document.getElementById("r_debugBox");
+  const emptyState = document.getElementById('r_emptyState');
+  const resultCard = document.getElementById('r_resultCard');
+  const detailCard = document.getElementById('r_detailCard');
+  const chartsCard = document.getElementById('r_chartsCard');
+  const debugBox   = document.getElementById('r_debugBox');
 
-  // reset
-  emptyState.style.display = "none";
-  resultCard.style.display = "none";
-  detailCard.style.display = "none";
-  chartsCard.style.display = "none";
-  debugBox.style.display   = "none";
+  emptyState.style.display = 'none';
+  resultCard.style.display = 'none';
+  detailCard.style.display = 'none';
+  chartsCard.style.display = 'none';
+  debugBox.style.display   = 'none';
 
-  const raw = localStorage.getItem("alphamind_assessment_latest");
-  if (!raw) { emptyState.style.display = "block"; return; }
+  const raw = localStorage.getItem(ASSESS_KEY);
+  if (!raw) { emptyState.style.display = 'block'; return; }
 
   let payload = null;
-  try { payload = JSON.parse(raw); } catch(e) { emptyState.style.display = "block"; return; }
+  try { payload = JSON.parse(raw); } catch(e) { emptyState.style.display = 'block'; return; }
 
   const ts = payload.meta?.ts ? new Date(payload.meta.ts) : null;
-  document.getElementById("r_tsPill").textContent = ts ? ts.toLocaleString() : "结果页";
+  document.getElementById('r_tsPill').textContent = ts ? ts.toLocaleString() : '结果页';
 
-  const rawResp = payload.raw || {};
-  const adviceText = rawResp?.data?.advice || "";
+  const rawResp    = payload.raw || {};
+  const adviceText = rawResp?.data?.advice || '';
 
   let resultObj = payload.result;
   if (!resultObj) {
     const t = adviceText.toString();
-    const fo = t.indexOf("{"); const lc = t.lastIndexOf("}");
+    const fo = t.indexOf('{'), lc = t.lastIndexOf('}');
     if (fo !== -1 && lc !== -1 && lc > fo) {
-      try { resultObj = JSON.parse(t.substring(fo, lc+1)); } catch(e) { resultObj = null; }
+      try { resultObj = JSON.parse(t.substring(fo, lc+1)); } catch(e) {}
     }
   }
-  if (!resultObj) { emptyState.style.display = "block"; return; }
+  if (!resultObj) { emptyState.style.display = 'block'; return; }
 
-  document.getElementById("r_riskType").textContent  = resultObj.risk_type || "-";
-  document.getElementById("r_riskScore").textContent  = (resultObj.score ?? "-").toString();
-  document.getElementById("r_riskDesc").textContent   = resultObj.description || "-";
-  document.getElementById("r_userScore").textContent  = (rawResp?.data?.user_score ?? "-").toString();
+  document.getElementById('r_riskType').textContent  = resultObj.risk_type || '-';
+  document.getElementById('r_riskScore').textContent  = (resultObj.score ?? '-').toString();
+  document.getElementById('r_riskDesc').textContent   = resultObj.description || '-';
+  document.getElementById('r_userScore').textContent  = (rawResp?.data?.user_score ?? '-').toString();
 
   renderUserRadar(resultObj.radar_values);
   renderSuggestions(resultObj.suggestions);
@@ -1189,39 +1276,39 @@ function loadResultData() {
   renderPriceChart(rawResp?.data?.chart);
   renderRoles(parseRoleSections(adviceText));
 
-  document.getElementById("r_promptBox").textContent = payload.prompt || "-";
-  document.getElementById("r_rawBox").textContent    = JSON.stringify(rawResp || {}, null, 2);
+  document.getElementById('r_promptBox').textContent = payload.prompt || '-';
+  document.getElementById('r_rawBox').textContent    = JSON.stringify(rawResp || {}, null, 2);
 
-  resultCard.style.display = "block";
-  detailCard.style.display = "grid";
-  chartsCard.style.display = "grid";
-  debugBox.style.display   = "block";
+  resultCard.style.display = 'block';
+  detailCard.style.display = 'grid';
+  chartsCard.style.display = 'grid';
+  debugBox.style.display   = 'block';
 }
 
 function copySummary() {
-  const type  = document.getElementById("r_riskType").textContent.trim();
-  const score = document.getElementById("r_riskScore").textContent.trim();
-  const desc  = document.getElementById("r_riskDesc").textContent.trim();
+  const type  = document.getElementById('r_riskType').textContent.trim();
+  const score = document.getElementById('r_riskScore').textContent.trim();
+  const desc  = document.getElementById('r_riskDesc').textContent.trim();
   const text  = `AlphaMind 评测结果\n风险类型：${type}\n风险分数：${score}/100\n简评：${desc}`;
-  navigator.clipboard?.writeText(text).then(() => alert("已复制到剪贴板")).catch(() => alert("复制失败，请手动复制"));
+  navigator.clipboard?.writeText(text).then(() => alert('已复制到剪贴板')).catch(() => alert('复制失败，请手动复制'));
 }
 
 function downloadJSON() {
-  const payload = localStorage.getItem("alphamind_assessment_latest") || "{}";
-  const blob = new Blob([payload], { type: "application/json;charset=utf-8" });
+  const payload = localStorage.getItem(ASSESS_KEY) || '{}';
+  const blob = new Blob([payload], { type:'application/json;charset=utf-8' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a"); a.href = url; a.download = "alphamind_assessment_result.json";
+  const a = document.createElement('a'); a.href = url; a.download = 'alphamind_assessment_result.json';
   document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════
    SURVEY
-═══════════════════════════════════════════ */
+════════════════════════════════════════ */
 const LIKERT_ITEMS = [
   "我认为该系统能更好地理解我的投资需求",
   "多模态数据分析（如交易+对话）有助于提升投顾准确性",
   "动态风险偏好识别对我有实际价值",
-  "系统提供的"可解释性建议"能增强我的信任感",
+  "系统提供的“可解释性建议”能增强我的信任感",
   "隐私保护技术（如联邦学习）是我选择该系统的重要因素",
   "我认为使用 AlphaMind 能帮助我做出更好的投资决策",
   "我认为该系统易于使用和学习",
@@ -1234,20 +1321,19 @@ const LIKERT_ITEMS = [
   "我愿意在理解系统推理过程后采纳其建议",
   "我认为该系统在合规性与透明度上优于传统投顾"
 ];
-const SURVEY_STORAGE_KEY = "alphamind_survey_responses_v1";
 
 function renderLikert() {
-  const root = document.getElementById("s_likertArea");
-  root.innerHTML = "";
+  const root = document.getElementById('s_likertArea');
+  root.innerHTML = '';
   LIKERT_ITEMS.forEach((text, idx) => {
-    const wrap = document.createElement("div"); wrap.className = "qcard";
-    const title = document.createElement("div"); title.className = "qtitle";
+    const wrap  = document.createElement('div'); wrap.className = 'qcard';
+    const title = document.createElement('div'); title.className = 'qtitle';
     title.textContent = `${idx+1}. ${text}`;
     wrap.appendChild(title);
-    const opts = document.createElement("div"); opts.className = "likert";
+    const opts = document.createElement('div'); opts.className = 'likert';
     for (let v = 1; v <= 5; v++) {
-      const id = `s_likert_${idx}_${v}`;
-      const label = document.createElement("label"); label.className = "opt"; label.setAttribute("for", id);
+      const id    = `s_likert_${idx}_${v}`;
+      const label = document.createElement('label'); label.className = 'opt'; label.setAttribute('for', id);
       label.innerHTML = `<input id="${id}" type="radio" name="s_likert_${idx}" value="${v}" required /> <span>${v}</span>`;
       opts.appendChild(label);
     }
@@ -1257,9 +1343,10 @@ function renderLikert() {
 }
 
 function computeSurveyProgress() {
-  const form = document.getElementById("surveyForm");
+  const form = document.getElementById('surveyForm');
+  if (!form) return;
   let baseDone = 0;
-  ["gender","age_group","education","profession","invest_exp","used_robo"].forEach(k => {
+  ['gender','age_group','education','profession','invest_exp','used_robo'].forEach(k => {
     const el = form.querySelector(`[name="${k}"]`);
     if (el && el.value) baseDone++;
   });
@@ -1267,13 +1354,12 @@ function computeSurveyProgress() {
   for (let i = 0; i < LIKERT_ITEMS.length; i++) {
     if (form.querySelector(`input[name="s_likert_${i}"]:checked`)) radioDone++;
   }
-  const total = 6 + LIKERT_ITEMS.length;
-  const pct = Math.round((baseDone + radioDone) / total * 100);
-  document.getElementById("s_progressFill").style.width = pct + "%";
+  const pct = Math.round((baseDone + radioDone) / (6 + LIKERT_ITEMS.length) * 100);
+  document.getElementById('s_progressFill').style.width = pct + '%';
 }
 
 function getSurveyFormData() {
-  const form = document.getElementById("surveyForm");
+  const form = document.getElementById('surveyForm');
   const fd = new FormData(form);
   const likert = [];
   for (let i = 0; i < LIKERT_ITEMS.length; i++) {
@@ -1282,22 +1368,19 @@ function getSurveyFormData() {
   return {
     meta: { ts: new Date().toISOString(), ua: navigator.userAgent },
     basic: {
-      gender:    fd.get("gender"),
-      age_group: fd.get("age_group"),
-      education: fd.get("education"),
-      profession: fd.get("profession"),
-      invest_exp: fd.get("invest_exp"),
-      used_robo:  fd.get("used_robo")
+      gender: fd.get('gender'), age_group: fd.get('age_group'),
+      education: fd.get('education'), profession: fd.get('profession'),
+      invest_exp: fd.get('invest_exp'), used_robo: fd.get('used_robo')
     },
-    likert: { scale: "1=非常不同意, 5=非常同意", items: LIKERT_ITEMS, values: likert },
+    likert: { scale:'1=非常不同意, 5=非常同意', items: LIKERT_ITEMS, values: likert },
     open: {
-      attract: (fd.get("open_attract")||"").toString().trim(),
-      privacy:  (fd.get("open_privacy")||"").toString().trim(),
-      pay:      (fd.get("open_pay")||"").toString().trim()
+      attract: (fd.get('open_attract')||'').toString().trim(),
+      privacy:  (fd.get('open_privacy')||'').toString().trim(),
+      pay:      (fd.get('open_pay')||'').toString().trim()
     },
     contact: {
-      email: (fd.get("contact_email")||"").toString().trim(),
-      phone: (fd.get("contact_phone")||"").toString().trim()
+      email: (fd.get('contact_email')||'').toString().trim(),
+      phone: (fd.get('contact_phone')||'').toString().trim()
     }
   };
 }
@@ -1306,7 +1389,7 @@ function saveSurveyResponse(payload) {
   const raw = localStorage.getItem(SURVEY_STORAGE_KEY);
   let arr = [];
   if (raw) { try { arr = JSON.parse(raw); } catch(e) { arr = []; } }
-  const id = "R" + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
+  const id = 'R' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2,6).toUpperCase();
   payload.meta.response_id = id;
   arr.push(payload);
   localStorage.setItem(SURVEY_STORAGE_KEY, JSON.stringify(arr));
@@ -1317,50 +1400,65 @@ function submitSurvey() {
   try {
     const payload = getSurveyFormData();
     if (!payload.basic.gender || payload.likert.values.some(v => !Number.isFinite(v))) {
-      alert("请完成所有必填项后再提交。"); return;
+      alert('请完成所有必填项后再提交。'); return;
     }
     const id = saveSurveyResponse(payload);
-    document.getElementById("s_doneText").textContent = `已收到您的答卷（编号：${id}）。感谢支持！`;
-    document.getElementById("s_doneModal").style.display = "flex";
-    document.getElementById("surveyForm").reset();
+    document.getElementById('s_doneText').textContent = `已收到您的答卷（编号：${id}）。感谢支持！`;
+    document.getElementById('s_doneModal').style.display = 'flex';
+    document.getElementById('surveyForm').reset();
     computeSurveyProgress();
   } catch(e) {
-    alert("提交失败：" + (e.message || e));
+    alert('提交失败：' + (e.message || e));
   }
 }
 
 function closeSurveyModal() {
-  document.getElementById("s_doneModal").style.display = "none";
+  document.getElementById('s_doneModal').style.display = 'none';
 }
 
-// wire progress updates
-document.addEventListener("change", computeSurveyProgress);
-document.addEventListener("input", computeSurveyProgress);
+document.addEventListener('change', computeSurveyProgress);
+document.addEventListener('input',  computeSurveyProgress);
 
-/* ═══════════════════════════════════════════
-   ADMIN LOGIN
-═══════════════════════════════════════════ */
-const ADMIN_USER = "alphamind001";
-const ADMIN_PASS = "dafengqixiyunfeiyang";
-const ADMIN_TOKEN_KEY = "alphamind_admin_token_v1";
-
+/* ════════════════════════════════════════
+   ADMIN
+════════════════════════════════════════ */
 function adminLogin() {
-  const u = (document.getElementById("ad_u").value || "").trim();
-  const p = (document.getElementById("ad_p").value || "").trim();
+  const u = (document.getElementById('ad_u').value || '').trim();
+  const p = (document.getElementById('ad_p').value || '').trim();
   if (u === ADMIN_USER && p === ADMIN_PASS) {
-    sessionStorage.setItem(ADMIN_TOKEN_KEY, "1");
-    window.location.href = "admin_dashboard.html";
+    sessionStorage.setItem(ADMIN_TOKEN_KEY, '1');
+    window.location.href = 'admin_dashboard.html';
   } else {
-    alert("账号或密码错误");
+    alert('账号或密码错误');
   }
 }
 
-/* ═══════════════════════════════════════════
+/* ════════════════════════════════════════
+   WINDOW RESIZE — resize all charts
+════════════════════════════════════════ */
+window.addEventListener('resize', () => {
+  Object.values(dashCharts).forEach(c => c && c.resize());
+  radarUser    && radarUser.resize();
+  radarCompare && radarCompare.resize();
+  priceChart   && priceChart.resize();
+});
+
+/* ════════════════════════════════════════
    INIT
-═══════════════════════════════════════════ */
+════════════════════════════════════════ */
 renderQuestions();
 renderLikert();
 computeSurveyProgress();
+
+// Hash routing
+(function initRouting() {
+  const hash = location.hash.replace('#', '');
+  nav(VALID_VIEWS.includes(hash) ? hash : 'dashboard');
+})();
+window.addEventListener('hashchange', () => {
+  const hash = location.hash.replace('#', '');
+  nav(VALID_VIEWS.includes(hash) ? hash : 'dashboard');
+});
 </script>
 </body>
 </html>
